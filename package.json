@@ -1,0 +1,14 @@
+{
+  "name": "daily-diet-accounting-system",
+  "version": "1.0.0",
+  "description": "每日飲食記帳系統 - Daily Diet Accounting System",
+  "scripts": {
+    "serve": "npx serve . -p 3000 -s",
+    "test": "playwright test --config=tests/playwright.config.ts",
+    "test:ui": "playwright test --config=tests/playwright.config.ts --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "serve": "^14.2.3"
+  }
+}

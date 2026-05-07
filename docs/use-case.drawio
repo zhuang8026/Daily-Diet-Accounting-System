@@ -1,0 +1,229 @@
+<mxfile host="app.diagrams.net" modified="2026-05-07T00:00:00.000Z" agent="Claude" version="21.0.0" type="device">
+  <diagram id="use-case-ddas" name="每日飲食記帳系統 Use Case Diagram">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== 系統邊界 ===== -->
+        <mxCell id="sys-boundary" value="每日飲食記帳系統（Daily Diet Accounting System）"
+                style="swimlane;startSize=30;fillColor=none;strokeColor=#2e7d32;fontStyle=1;fontSize=14;swimlaneHead=0;labelBackgroundColor=none;"
+                vertex="1" parent="1">
+          <mxGeometry x="260" y="60" width="900" height="920" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 角色：訪客 ===== -->
+        <mxCell id="actor-guest" value="訪客&#xa;（Guest）"
+                style="shape=mxgraph.flowchart.start_2;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="60" y="180" width="60" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 角色：一般使用者 ===== -->
+        <mxCell id="actor-user" value="一般使用者&#xa;（User）"
+                style="shape=mxgraph.flowchart.start_2;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="60" y="480" width="60" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 角色：管理員 ===== -->
+        <mxCell id="actor-admin" value="管理員&#xa;（Admin）"
+                style="shape=mxgraph.flowchart.start_2;fillColor=#ffe6cc;strokeColor=#d6b656;fontStyle=1;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="1250" y="480" width="60" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Use Cases：訪客 ===== -->
+        <mxCell id="uc-about" value="查看系統介紹&#xa;/about"
+                style="ellipse;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="310" y="160" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-login" value="使用者登入&#xa;UC-02"
+                style="ellipse;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="310" y="260" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-register" value="使用者註冊&#xa;UC-01"
+                style="ellipse;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="540" y="160" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Use Cases：一般使用者 ===== -->
+        <mxCell id="uc-dashboard" value="查看每日飲食總覽&#xa;M02 / PAGE-01"
+                style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="310" y="380" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-add-record" value="新增飲食紀錄&#xa;UC-03"
+                style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="540" y="380" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-edit-record" value="編輯飲食紀錄"
+                style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="540" y="460" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-delete-record" value="刪除飲食紀錄"
+                style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="540" y="540" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-food-search" value="搜尋食物&#xa;M03 / PAGE-02"
+                style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="310" y="460" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-settings" value="設定個人目標&#xa;UC-04 / PAGE-04"
+                style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="310" y="540" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-report" value="查看趨勢報表&#xa;UC-05 / PAGE-05"
+                style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="310" y="620" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-logout" value="登出"
+                style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="310" y="700" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Use Cases：管理員 ===== -->
+        <mxCell id="uc-admin-dash" value="查看統計儀表板&#xa;ADMIN-01"
+                style="ellipse;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="760" y="380" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-admin-foods" value="管理食物資料庫&#xa;UC-06 / ADMIN-02"
+                style="ellipse;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="760" y="460" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-admin-records" value="管理飲食紀錄&#xa;ADMIN-03"
+                style="ellipse;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="760" y="540" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-admin-users" value="管理使用者帳號&#xa;ADMIN-04"
+                style="ellipse;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="760" y="620" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-admin-ann" value="管理系統公告&#xa;ADMIN-05"
+                style="ellipse;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="760" y="700" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-csv-import" value="CSV 批次匯入食物"
+                style="ellipse;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="990" y="460" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-export" value="匯出 CSV / JSON"
+                style="ellipse;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=12;"
+                vertex="1" parent="1">
+          <mxGeometry x="990" y="540" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 關聯線：訪客 ===== -->
+        <mxCell id="e1" edge="1" source="actor-guest" target="uc-about" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" source="actor-guest" target="uc-login" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" source="actor-guest" target="uc-register" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 關聯線：一般使用者（繼承訪客登入） ===== -->
+        <mxCell id="e4" edge="1" source="actor-user" target="uc-dashboard" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" source="actor-user" target="uc-add-record" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" source="actor-user" target="uc-edit-record" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" source="actor-user" target="uc-delete-record" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" source="actor-user" target="uc-food-search" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" source="actor-user" target="uc-settings" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" source="actor-user" target="uc-report" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" source="actor-user" target="uc-logout" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== 關聯線：管理員 ===== -->
+        <mxCell id="e12" edge="1" source="actor-admin" target="uc-admin-dash" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" edge="1" source="actor-admin" target="uc-admin-foods" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" edge="1" source="actor-admin" target="uc-admin-records" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" edge="1" source="actor-admin" target="uc-admin-users" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" edge="1" source="actor-admin" target="uc-admin-ann" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- include 關係 -->
+        <mxCell id="e17" edge="1" source="uc-admin-foods" target="uc-csv-import" parent="1"
+                style="dashed;endArrow=open;startArrow=none;">
+          <mxGeometry relative="1" as="geometry" />
+          <mxCell value="«include»" style="edgeLabel;fontSize=10;" vertex="1" connectable="0" parent="e17">
+            <mxGeometry relative="0.5" as="geometry" />
+          </mxCell>
+        </mxCell>
+        <mxCell id="e18" edge="1" source="uc-admin-records" target="uc-export" parent="1"
+                style="dashed;endArrow=open;startArrow=none;">
+          <mxGeometry relative="1" as="geometry" />
+          <mxCell value="«include»" style="edgeLabel;fontSize=10;" vertex="1" connectable="0" parent="e18">
+            <mxGeometry relative="0.5" as="geometry" />
+          </mxCell>
+        </mxCell>
+
+        <!-- 管理員繼承使用者功能（一般化） -->
+        <mxCell id="e19" edge="1" source="actor-admin" target="actor-user" parent="1"
+                style="endArrow=block;endFill=0;dashed=0;">
+          <mxGeometry relative="1" as="geometry" />
+          <mxCell value="«extends»" style="edgeLabel;fontSize=10;" vertex="1" connectable="0" parent="e19">
+            <mxGeometry relative="0.5" as="geometry" />
+          </mxCell>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

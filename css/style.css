@@ -1,0 +1,289 @@
+/* ============================================================
+   每日飲食記帳系統 — 自訂樣式
+   規格書第 09 節：介面設計規範、第 11 節：UI/UX 設計要求
+   ============================================================ */
+
+/* ---- CSS Variables（色系） ---- */
+:root {
+  --color-primary: #2e7d32;
+  --color-primary-dark: #1b5e20;
+  --color-bg: #f5f5f5;
+  --color-card: #ffffff;
+  --color-text: #212121;
+  --color-text-secondary: #757575;
+  --color-warning: #e65100;
+  --color-error: #c62828;
+  --color-success: #388e3c;
+  --color-info: #1565c0;
+  --sidebar-width: 240px;
+  --header-height: 60px;
+  --bottom-nav-height: 60px;
+  --card-radius: 12px;
+  --btn-radius: 8px;
+}
+
+/* ---- 深色模式（規格書 第 09 節） ---- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #121212;
+    --color-card: #1e1e1e;
+    --color-text: #e0e0e0;
+    --color-text-secondary: #bdbdbd;
+  }
+}
+
+/* ---- 基礎排版 ---- */
+body {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+h1, h2, h3, h4, h5, h6 { font-weight: 500; }
+
+.fw-500 { font-weight: 500 !important; }
+
+.card {
+  border-radius: var(--card-radius) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.btn { border-radius: var(--btn-radius) !important; }
+
+/* ---- 載入遮罩 ---- */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* ============================================================
+   主版面佈局（Grid Layout）
+   桌機：Header + Sidebar | Main
+   手機：Header + Main + Bottom Nav
+   ============================================================ */
+
+/* 桌機版（≥768px） */
+.app-layout {
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "sidebar main";
+  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-rows: var(--header-height) 1fr;
+  min-height: 100vh;
+}
+
+.app-header {
+  grid-area: header;
+  background-color: var(--color-primary);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-inner {
+  height: var(--header-height);
+}
+
+.app-sidebar {
+  grid-area: sidebar;
+  background-color: var(--color-card);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  grid-area: main;
+  overflow-y: auto;
+  min-height: calc(100vh - var(--header-height));
+}
+
+.app-bottom-nav {
+  grid-area: unset;
+  display: none !important;
+}
+
+/* 手機版（<768px） */
+@media (max-width: 767px) {
+  .app-layout {
+    grid-template-areas:
+      "header"
+      "main"
+      "bottom-nav";
+    grid-template-columns: 1fr;
+    grid-template-rows: var(--header-height) 1fr var(--bottom-nav-height);
+  }
+
+  .app-sidebar {
+    display: none !important;
+  }
+
+  .app-bottom-nav {
+    grid-area: bottom-nav;
+    display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--bottom-nav-height);
+    background-color: var(--color-card);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    z-index: 100;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .app-main {
+    padding-bottom: calc(var(--bottom-nav-height) + 8px);
+  }
+}
+
+/* 訪客模式：使用全寬版面 */
+.guest-mode .app-layout {
+  grid-template-areas: "header header" "main main";
+}
+.guest-mode .app-sidebar { display: none !important; }
+.guest-mode .app-bottom-nav { display: none !important; }
+
+/* ---- 側邊欄導覽項目 ---- */
+.app-sidebar .nav-link {
+  color: var(--color-text);
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.app-sidebar .nav-link:hover {
+  background-color: rgba(46, 125, 50, 0.08);
+  color: var(--color-primary);
+}
+
+.app-sidebar .nav-link.active {
+  background-color: rgba(46, 125, 50, 0.15);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+}
+
+/* ---- 底部導覽項目 ---- */
+.bottom-nav-item {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.bottom-nav-item:hover,
+.bottom-nav-item.active {
+  color: var(--color-primary);
+}
+
+/* ---- 認證頁面（登入 / 註冊） ---- */
+.auth-page {
+  background-color: var(--color-bg);
+}
+
+.auth-card {
+  border: none;
+}
+
+/* ---- 食物自動補全下拉 ---- */
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--color-card);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 200;
+}
+
+.autocomplete-item {
+  cursor: pointer;
+  transition: background-color 0.1s;
+}
+
+.autocomplete-item:hover {
+  background-color: rgba(46, 125, 50, 0.08);
+}
+
+/* ---- 進度條 ---- */
+.progress { border-radius: 4px; background-color: #e0e0e0; }
+
+/* ---- Toast（通知） ---- */
+.toast { border-radius: var(--btn-radius) !important; }
+
+/* ---- 字型大小 ---- */
+h1.h1, .h1 { font-size: 24px; }
+h2.h2, .h2 { font-size: 18px; }
+p, td, li { font-size: 14px; }
+
+/* ---- RWD 細節 ---- */
+@media (max-width: 320px) {
+  body { font-size: 13px; }
+}
+
+/* ---- 深色模式下卡片調整 ---- */
+[data-bs-theme="dark"] .card {
+  background-color: var(--color-card);
+}
+
+[data-bs-theme="dark"] .app-sidebar {
+  background-color: #1e1e1e;
+  border-right-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-bs-theme="dark"] .app-bottom-nav {
+  background-color: #1e1e1e;
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-bs-theme="dark"] .autocomplete-dropdown {
+  background-color: #2a2a2a;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ---- 無障礙輔助 ---- */
+:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* ---- 滾動條美化 ---- */
+.app-sidebar::-webkit-scrollbar,
+.app-main::-webkit-scrollbar {
+  width: 4px;
+}
+.app-sidebar::-webkit-scrollbar-thumb,
+.app-main::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+/* ---- 寬螢幕（2560px） ---- */
+@media (min-width: 1440px) {
+  .container-fluid { max-width: 1400px; margin: 0 auto; }
+}
