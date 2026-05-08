@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { Modal } from 'bootstrap'
-import { useToast } from '../../context/ToastContext'
+import { useToast } from '@/context/ToastContext'
 import {
   getAnnouncements,
   addAnnouncement,
   updateAnnouncement,
   deleteAnnouncement
-} from '../../services/announcementService'
-import { getTodayISO, sanitizeInput } from '../../services/utils'
+} from '@/services/announcementService'
+import { getTodayISO, sanitizeInput } from '@/services/utils'
 
 const emptyForm = (today) => ({
   title: '',

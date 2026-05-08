@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Title, Tooltip, Legend, Filler } from 'chart.js'
 import { Line, Doughnut } from 'react-chartjs-2'
-import { useAuth } from '../context/AuthContext'
-import { getDateRangeSummary } from '../services/recordService'
-import { getTargets } from '../services/profileService'
-import { offsetDate, getTodayISO } from '../services/utils'
+import { useAuth } from '@/context/AuthContext'
+import { getDateRangeSummary } from '@/services/recordService'
+import { getTargets } from '@/services/profileService'
+import { offsetDate, getTodayISO } from '@/services/utils'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Title, Tooltip, Legend, Filler)
 

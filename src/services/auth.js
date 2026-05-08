@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs'
-import { setStorage, getStorage, removeStorage } from './storage'
-import { generateUUID, validateEmail, validatePassword, formatISO } from './utils'
+import { setStorage, getStorage, removeStorage } from '@/services/storage'
+import { generateUUID, validateEmail, validatePassword, formatISO } from '@/services/utils'
 
 const register = async (email, password, displayName) => {
   const trimEmail = email.trim().toLowerCase()

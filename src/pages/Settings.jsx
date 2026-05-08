@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { useToast } from '../context/ToastContext'
-import { getProfile, updateProfile } from '../services/profileService'
-import { calculateBMR, sanitizeInput } from '../services/utils'
+import { useAuth } from '@/context/AuthContext'
+import { useToast } from '@/context/ToastContext'
+import { getProfile, updateProfile } from '@/services/profileService'
+import { calculateBMR, sanitizeInput } from '@/services/utils'
 
 const ACTIVITY_OPTIONS = [
   { value: 'sedentary', label: '久坐（幾乎不運動）' },

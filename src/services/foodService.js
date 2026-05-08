@@ -4,8 +4,8 @@
  *           資料存於 ddas_foods（全使用者共用）
  */
 
-import { setStorage, getStorage } from './storage';
-import { formatISO } from './utils';
+import { setStorage, getStorage } from '@/services/storage';
+import { formatISO } from '@/services/utils';
 
 /**
  * 函式名稱：getFoods

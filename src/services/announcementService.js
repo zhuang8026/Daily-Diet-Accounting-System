@@ -4,8 +4,8 @@
  *           前台顯示目前有效的公告（最多 1 則），後台可管理所有公告
  */
 
-import { setStorage, getStorage } from './storage';
-import { generateUUID, formatISO, getTodayISO } from './utils';
+import { setStorage, getStorage } from '@/services/storage';
+import { generateUUID, formatISO, getTodayISO } from '@/services/utils';
 
 /**
  * 函式名稱：getAnnouncements

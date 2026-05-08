@@ -4,8 +4,8 @@
  *           所有操作以 userId 為範圍，資料存於 ddas_records_{userId}
  */
 
-import { setStorage, getStorage } from './storage';
-import { generateUUID, formatISO, getTodayISO } from './utils';
+import { setStorage, getStorage } from '@/services/storage';
+import { generateUUID, formatISO, getTodayISO } from '@/services/utils';
 
 /**
  * 函式名稱：getRecords

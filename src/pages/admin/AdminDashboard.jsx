@@ -9,8 +9,8 @@ import {
   Tooltip,
   Legend
 } from 'chart.js'
-import { getStorage } from '../../services/storage'
-import { getTodayISO, offsetDate } from '../../services/utils'
+import { getStorage } from '@/services/storage'
+import { getTodayISO, offsetDate } from '@/services/utils'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 

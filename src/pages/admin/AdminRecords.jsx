@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { Modal } from 'bootstrap'
-import { useToast } from '../../context/ToastContext'
-import { getAllRecordsForAdmin, deleteRecord } from '../../services/recordService'
-import { getMealLabel, getTodayISO, offsetDate } from '../../services/utils'
+import { useToast } from '@/context/ToastContext'
+import { getAllRecordsForAdmin, deleteRecord } from '@/services/recordService'
+import { getMealLabel, getTodayISO, offsetDate } from '@/services/utils'
 
 export default function AdminRecords() {
   const { showToast } = useToast()

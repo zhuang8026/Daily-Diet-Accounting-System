@@ -1,8 +1,8 @@
 import { Outlet } from 'react-router-dom'
-import Header from './Header'
-import Sidebar from './Sidebar'
-import BottomNav from './BottomNav'
-import { useAuth } from '../context/AuthContext'
+import Header from '@/components/Header'
+import Sidebar from '@/components/Sidebar'
+import BottomNav from '@/components/BottomNav'
+import { useAuth } from '@/context/AuthContext'
 
 export default function Layout() {
   const { session } = useAuth()

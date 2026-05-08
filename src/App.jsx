@@ -1,21 +1,11 @@
 import { useEffect, useState } from 'react'
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider, useAuth } from './context/AuthContext'
-import { ToastProvider } from './context/ToastContext'
-import { initSeed } from './services/seed'
-import Layout from './components/Layout'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import About from './pages/About'
-import Dashboard from './pages/Dashboard'
-import FoodSearch from './pages/FoodSearch'
-import Report from './pages/Report'
-import Settings from './pages/Settings'
-import AdminDashboard from './pages/admin/AdminDashboard'
-import AdminFoods from './pages/admin/AdminFoods'
-import AdminRecords from './pages/admin/AdminRecords'
-import AdminUsers from './pages/admin/AdminUsers'
-import AdminAnnouncements from './pages/admin/AdminAnnouncements'
+import { AuthProvider, useAuth } from '@/context/AuthContext'
+import { ToastProvider } from '@/context/ToastContext'
+import { initSeed } from '@/services/seed'
+import Layout from '@/components/Layout'
+import About from '@/pages/About'
+import { guestRoutes, authRoutes, adminRoutes } from '@/router'
 
 function RequireAuth({ children }) {
   const { session } = useAuth()
@@ -40,26 +30,6 @@ function RootRedirect() {
   const { session } = useAuth()
   return <Navigate to={session ? '/dashboard' : '/login'} replace />
 }
-
-const guestRoutes = [
-  { path: '/login',    component: Login },
-  { path: '/register', component: Register },
-]
-
-const authRoutes = [
-  { path: '/dashboard',   component: Dashboard },
-  { path: '/food-search', component: FoodSearch },
-  { path: '/report',      component: Report },
-  { path: '/settings',    component: Settings },
-]
-
-const adminRoutes = [
-  { path: '/admin',                 component: AdminDashboard },
-  { path: '/admin/foods',           component: AdminFoods },
-  { path: '/admin/records',         component: AdminRecords },
-  { path: '/admin/users',           component: AdminUsers },
-  { path: '/admin/announcements',   component: AdminAnnouncements },
-]
 
 function AppRoutes() {
   return (
