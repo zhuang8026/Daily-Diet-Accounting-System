@@ -8,13 +8,15 @@
 
 | 技術 | 版本 | 用途 |
 |------|------|------|
-| HTML5 / CSS3 / JavaScript (ES6 Modules) | — | 核心語言 |
+| React | 18.3.1 | UI 框架（函式元件 + Hooks） |
+| React DOM | 18.3.1 | DOM 渲染 |
+| React Router DOM | 6.26.0 | Hash Router、路由守衛 |
+| Vite | 5.4.8 | 建構工具、本地開發伺服器 |
 | Bootstrap | 5.3.3 | UI 框架、RWD 排版 |
 | Bootstrap Icons | 1.11.3 | 圖示庫 |
-| Chart.js | 4.4.4 | 趨勢報表圖表 |
+| Chart.js | 4.4.4 | 趨勢折線圖、甜甜圈圖 |
+| react-chartjs-2 | 5.2.0 | Chart.js 的 React 封裝 |
 | bcryptjs | 2.4.3 | 密碼雜湊（cost=12） |
-| serve | 14.2.3 | 本地靜態伺服器 |
-| Playwright | 1.44.0 | E2E 自動化測試 |
 
 ---
 
@@ -24,28 +26,28 @@
 純前端 SPA（Single Page Application）
 ├── 無後端伺服器
 ├── 路由：Hash Router（#/dashboard）
+├── 狀態管理：React Context API（AuthContext、ToastContext）
 ├── 資料層：瀏覽器 localStorage（7 天自動過期）
 ├── 密碼安全：bcryptjs 雜湊，登入失敗 5 次鎖定 15 分鐘
-└── 部署：GitHub Pages（靜態托管，零設定）
+└── 部署：GitHub Pages（npm run build → dist/）
 ```
 
-**頁面渲染流程**
+**元件與資料流**
 
 ```
-index.html（SPA 殼層）
-  └── js/app.js（Hash Router + Auth Guard）
-        ├── 未登入 → #/login
-        └── 已登入 → 對應頁面模組
+App.jsx（HashRouter + Providers + 路由守衛）
+  └── Layout.jsx（Header / Sidebar / BottomNav）
+        └── Pages（Dashboard / FoodSearch / Report / Settings / Admin*）
+              └── services/（純函式，讀寫 localStorage）
+                    └── storage.js（localStorage 封裝，含 7 天過期）
 ```
 
-**資料流**
+**Context 架構**
 
-```
-使用者操作
-  └── pages/*.js（UI 事件）
-        └── *Service.js（業務邏輯）
-              └── storage.js（localStorage 讀寫）
-```
+| Context | 提供內容 |
+|---------|---------|
+| `AuthContext` | `session`、`refresh()`、`logout()` |
+| `ToastContext` | `showToast(message, type)` |
 
 ---
 
@@ -53,47 +55,55 @@ index.html（SPA 殼層）
 
 ```
 Daily-Diet-Accounting-System/
-├── index.html                      # SPA 殼層，載入所有靜態資源
-├── css/
-│   └── style.css                   # 全域樣式、CSS Variables、RWD、Dark Mode
-├── js/
-│   ├── app.js                      # Hash Router、Auth Guard、版面渲染
-│   ├── auth.js                     # 登入 / 註冊 / 登出 / Session
-│   ├── seed.js                     # 首次載入初始化（食物資料 + Demo 帳號）
-│   ├── storage.js                  # localStorage 封裝（含 7 天過期）
-│   ├── utils.js                    # 共用工具（Toast、BMR 計算、UUID 等）
-│   ├── recordService.js            # 飲食紀錄 CRUD
-│   ├── foodService.js              # 食物資料庫 CRUD + 搜尋
-│   ├── profileService.js           # 個人設定讀寫
-│   ├── announcementService.js      # 公告 CRUD
-│   ├── bcrypt.min.js               # bcryptjs 本地檔（避免 CDN 依賴）
-│   └── pages/
-│       ├── login.js                # 登入頁
-│       ├── register.js             # 註冊頁
-│       ├── dashboard.js            # 今日總覽
-│       ├── foodSearch.js           # 食物搜尋 + 新增紀錄
-│       ├── report.js               # 趨勢報表
-│       ├── settings.js             # 個人設定
-│       ├── about.js                # 關於本系統
-│       └── admin/
-│           ├── adminDashboard.js   # 後台統計儀表板
-│           ├── adminFoods.js       # 食物管理
-│           ├── adminRecords.js     # 飲食紀錄管理
-│           ├── adminUsers.js       # 使用者管理
-│           └── adminAnnouncements.js # 公告管理
-├── docs/
-│   ├── bdd.feature                 # BDD Gherkin 測試案例（TC-001 ~ TC-007）
-│   └── use-case.drawio             # Use Case 圖（draw.io 格式）
-├── tests/
-│   ├── playwright.config.ts        # Playwright 設定
-│   ├── auth.spec.ts                # 認證流程測試
-│   ├── records.spec.ts             # 飲食紀錄測試
-│   ├── adminFoods.spec.ts          # 食物管理測試
-│   ├── report.spec.ts              # 報表測試
-│   ├── rwd.spec.ts                 # 響應式設計測試
-│   └── settings.spec.ts            # 個人設定測試
+├── index.html                        # Vite SPA 殼層
+├── vite.config.js                    # Vite 設定（dev: /，build: /Daily-Diet-Accounting-System/）
 ├── package.json
-└── README.md
+├── src/
+│   ├── main.jsx                      # 入口點，載入 Bootstrap CSS/JS
+│   ├── App.jsx                       # 路由設定、守衛元件、初始化
+│   ├── index.css                     # 全域樣式、CSS Variables、RWD
+│   ├── context/
+│   │   ├── AuthContext.jsx           # 登入 Session 管理
+│   │   └── ToastContext.jsx          # 全域 Toast 通知
+│   ├── components/
+│   │   ├── Layout.jsx                # 頁面框架（Outlet wrapper）
+│   │   ├── Header.jsx                # 頂部導覽列
+│   │   ├── Sidebar.jsx               # 側邊選單（桌機）
+│   │   └── BottomNav.jsx             # 底部導覽（手機）
+│   ├── pages/
+│   │   ├── Login.jsx                 # 登入頁
+│   │   ├── Register.jsx              # 註冊頁
+│   │   ├── About.jsx                 # 關於本系統
+│   │   ├── Dashboard.jsx             # 今日飲食總覽
+│   │   ├── FoodSearch.jsx            # 食物搜尋
+│   │   ├── Report.jsx                # 趨勢報表
+│   │   ├── Settings.jsx              # 個人目標設定
+│   │   └── admin/
+│   │       ├── AdminDashboard.jsx    # 後台統計儀表板
+│   │       ├── AdminFoods.jsx        # 食物資料管理
+│   │       ├── AdminRecords.jsx      # 飲食紀錄管理
+│   │       ├── AdminUsers.jsx        # 使用者管理
+│   │       └── AdminAnnouncements.jsx # 公告管理
+│   └── services/
+│       ├── storage.js                # localStorage 封裝（含 7 天過期）
+│       ├── utils.js                  # 工具函式（UUID、日期、BMR 計算等）
+│       ├── auth.js                   # 登入 / 註冊 / 登出
+│       ├── seed.js                   # 首次載入初始化（食物資料 + Demo 帳號）
+│       ├── recordService.js          # 飲食紀錄 CRUD
+│       ├── foodService.js            # 食物資料庫 CRUD + 搜尋
+│       ├── profileService.js         # 個人設定讀寫
+│       └── announcementService.js    # 公告 CRUD
+├── docs/
+│   ├── bdd.feature                   # BDD Gherkin 測試案例
+│   └── use-case.drawio               # Use Case 圖（draw.io）
+└── tests/
+    ├── playwright.config.ts
+    ├── auth.spec.ts
+    ├── records.spec.ts
+    ├── adminFoods.spec.ts
+    ├── report.spec.ts
+    ├── rwd.spec.ts
+    └── settings.spec.ts
 ```
 
 ---
@@ -105,35 +115,45 @@ Daily-Diet-Accounting-System/
 - Node.js 18 以上
 - npm 9 以上
 
-### 步驟
+### 本地開發
 
 ```bash
 # 1. 進入專案目錄
 cd Daily-Diet-Accounting-System
 
-# 2. 安裝依賴（Playwright 測試工具）
+# 2. 安裝依賴
 npm install
 
-# 3. 啟動本地伺服器
-npm run serve
+# 3. 啟動開發伺服器
+npm run dev
 
 # 4. 開啟瀏覽器
-# http://localhost:3000
+# http://localhost:5173
 ```
 
-> **注意**：請務必透過 HTTP 伺服器開啟，直接用 `file://` 開啟會因 ES6 Module 的 CORS 限制而無法運作。
+### 建置與預覽
+
+```bash
+# 建置正式版本（輸出至 dist/）
+npm run build
+
+# 本地預覽正式版本
+npm run preview
+```
+
+> **GitHub Pages 部署**：`npm run build` 產生的 `dist/` 內容即為部署所需，base path 已自動設為 `/Daily-Diet-Accounting-System/`。
 
 ---
 
-## 資料來源（DB）
+## 資料來源
 
 本系統無後端資料庫，所有資料存於**瀏覽器 localStorage**。
 
-### 初始化資料（seed.js）
+### 初始資料（seed.js）
 
-首次載入時自動寫入：
+首次載入時自動建立：
 
-**食物資料庫（ddas_foods）**：10 筆預設食物
+**食物資料庫（ddas_foods）**
 
 | ID | 食物名稱 | 類別 | 熱量（kcal） |
 |----|---------|------|------------|
@@ -148,6 +168,13 @@ npm run serve
 | F009 | 鮭魚（烤） | 肉類 | 208 |
 | F010 | 洋芋片 | 零食 | 160 |
 
+**Demo 帳號（ddas_users）**
+
+| 角色 | Email | 密碼 |
+|------|-------|------|
+| 一般使用者 | `demo@demo.com` | `Demo@123` |
+| 管理員 | `admin@demo.com` | `Admin@123` |
+
 ### localStorage 資料結構
 
 | Key | 說明 |
@@ -156,32 +183,30 @@ npm run serve
 | `ddas_users` | 使用者帳號清單 |
 | `ddas_session` | 目前登入 Session |
 | `ddas_records_{userId}` | 個人飲食紀錄 |
-| `ddas_profile_{userId}` | 個人設定 |
+| `ddas_profile_{userId}` | 個人設定與目標 |
 | `ddas_announcements` | 系統公告 |
 | `ddas_login_attempts_{email}` | 登入失敗次數（防暴力破解） |
 
-> 資料過期時間：寫入後 **7 天**自動清除。
+> 所有資料寫入後 **7 天**自動過期清除。
 
 ---
 
 ## 如何登入
 
-系統提供兩組預設 Demo 帳號：
-
 | 角色 | Email | 密碼 | 可用功能 |
 |------|-------|------|---------|
 | 一般使用者 | `demo@demo.com` | `Demo@123` | 今日總覽、食物搜尋、趨勢報表、個人設定 |
-| 管理員 | `admin@demo.com` | `Admin@123` | 後台管理（使用者、食物、紀錄、公告） |
+| 管理員 | `admin@demo.com` | `Admin@123` | 所有功能 + 管理員後台 |
 
-**登入失敗超過 5 次**，帳號將鎖定 15 分鐘。
+登入失敗超過 **5 次**，帳號將鎖定 **15 分鐘**。
 
-### 若出現「帳號或密碼錯誤」
+### 若無法登入（帳號或密碼錯誤）
 
-localStorage 可能殘留損壞的初始化資料，請清除後重試：
+localStorage 可能殘留損壞資料，請依下列步驟清除後重試：
 
 1. 按 **F12** 開啟開發者工具
 2. 切換到 **Application** 分頁
-3. 左側選單點選 **Local Storage** → 選擇網站來源
+3. 左側選單 **Local Storage** → 選擇網站來源
 4. 全選所有項目並刪除
 5. **重新整理頁面**，等待初始化完成（約 3–5 秒）
 6. 重新登入
@@ -192,29 +217,19 @@ localStorage 可能殘留損壞的初始化資料，請清除後重試：
 
 ### 一般使用者
 
-| 頁面 | 路徑 | 功能 |
-|------|------|------|
-| 今日總覽 | `#/dashboard` | 查看當日熱量與三大營養素進度、新增飲食紀錄 |
-| 食物搜尋 | `#/food-search` | 搜尋食物、依類別篩選、加入當日紀錄 |
-| 趨勢報表 | `#/report` | 查看近 7 天 / 30 天熱量與營養素趨勢圖 |
-| 個人設定 | `#/settings` | 設定身高體重、活動量、飲食目標與每日目標熱量 |
+| 頁面 | 路由 | 功能說明 |
+|------|------|---------|
+| 今日總覽 | `#/dashboard` | 查看當日熱量環形圖與三大營養素進度、依餐別新增／編輯／刪除紀錄、瀏覽歷史日期 |
+| 食物搜尋 | `#/food-search` | 依名稱、類別、熱量範圍搜尋食物，加入當日飲食紀錄 |
+| 趨勢報表 | `#/report` | 近 7 天 / 30 天熱量趨勢折線圖、三大營養素比例圓餅圖、摘要統計 |
+| 個人設定 | `#/settings` | 設定身高、體重、活動量、飲食目標，Harris-Benedict 公式自動計算建議熱量 |
 
 ### 管理員
 
-| 頁面 | 路徑 | 功能 |
-|------|------|------|
-| 統計儀表板 | `#/admin` | 查看全系統使用統計 |
-| 食物管理 | `#/admin/foods` | 新增 / 編輯 / 刪除食物資料 |
-| 飲食紀錄 | `#/admin/records` | 瀏覽所有使用者紀錄 |
-| 使用者管理 | `#/admin/users` | 啟用 / 停用帳號 |
-| 公告管理 | `#/admin/announcements` | 發布系統公告 |
-
-### 自動化測試
-
-```bash
-# 執行所有 E2E 測試（需先啟動伺服器）
-npm test
-
-# 開啟 Playwright UI 模式
-npm run test:ui
-```
+| 頁面 | 路由 | 功能說明 |
+|------|------|---------|
+| 統計儀表板 | `#/admin` | 全系統使用者數、今日紀錄數、活躍使用者等統計 |
+| 食物管理 | `#/admin/foods` | 新增／編輯／刪除食物、CSV 批次匯入 |
+| 飲食紀錄 | `#/admin/records` | 查詢所有使用者紀錄、篩選、CSV/JSON 匯出 |
+| 使用者管理 | `#/admin/users` | 啟用／停用帳號、變更角色、重設密碼 |
+| 公告管理 | `#/admin/announcements` | 發布、編輯、刪除系統公告 |
