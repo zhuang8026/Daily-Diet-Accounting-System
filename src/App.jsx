@@ -41,23 +41,41 @@ function RootRedirect() {
   return <Navigate to={session ? '/dashboard' : '/login'} replace />
 }
 
+const guestRoutes = [
+  { path: '/login',    component: Login },
+  { path: '/register', component: Register },
+]
+
+const authRoutes = [
+  { path: '/dashboard',   component: Dashboard },
+  { path: '/food-search', component: FoodSearch },
+  { path: '/report',      component: Report },
+  { path: '/settings',    component: Settings },
+]
+
+const adminRoutes = [
+  { path: '/admin',                 component: AdminDashboard },
+  { path: '/admin/foods',           component: AdminFoods },
+  { path: '/admin/records',         component: AdminRecords },
+  { path: '/admin/users',           component: AdminUsers },
+  { path: '/admin/announcements',   component: AdminAnnouncements },
+]
+
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<RootRedirect />} />
-      <Route path="/login" element={<GuestOnly><Login /></GuestOnly>} />
-      <Route path="/register" element={<GuestOnly><Register /></GuestOnly>} />
+      {guestRoutes.map(({ path, component: C }) => (
+        <Route key={path} path={path} element={<GuestOnly><C /></GuestOnly>} />
+      ))}
       <Route path="/about" element={<About />} />
       <Route element={<Layout />}>
-        <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
-        <Route path="/food-search" element={<RequireAuth><FoodSearch /></RequireAuth>} />
-        <Route path="/report" element={<RequireAuth><Report /></RequireAuth>} />
-        <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
-        <Route path="/admin" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
-        <Route path="/admin/foods" element={<RequireAdmin><AdminFoods /></RequireAdmin>} />
-        <Route path="/admin/records" element={<RequireAdmin><AdminRecords /></RequireAdmin>} />
-        <Route path="/admin/users" element={<RequireAdmin><AdminUsers /></RequireAdmin>} />
-        <Route path="/admin/announcements" element={<RequireAdmin><AdminAnnouncements /></RequireAdmin>} />
+        {authRoutes.map(({ path, component: C }) => (
+          <Route key={path} path={path} element={<RequireAuth><C /></RequireAuth>} />
+        ))}
+        {adminRoutes.map(({ path, component: C }) => (
+          <Route key={path} path={path} element={<RequireAdmin><C /></RequireAdmin>} />
+        ))}
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
