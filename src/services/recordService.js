@@ -4,8 +4,8 @@
  *           所有操作以 userId 為範圍，資料存於 ddas_records_{userId}
  */
 
-import { setStorage, getStorage } from './storage.js';
-import { generateUUID, formatISO, getTodayISO } from './utils.js';
+import { setStorage, getStorage } from './storage';
+import { generateUUID, formatISO, getTodayISO } from './utils';
 
 /**
  * 函式名稱：getRecords
@@ -129,8 +129,10 @@ const getDateRangeSummary = (userId, startDate, endDate) => {
   const days = [];
   let current = new Date(startDate + 'T00:00:00');
   const end = new Date(endDate + 'T00:00:00');
+  const pad = n => String(n).padStart(2, '0')
+  const toLocalISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
   while (current <= end) {
-    days.push(current.toISOString().slice(0, 10));
+    days.push(toLocalISO(current));
     current.setDate(current.getDate() + 1);
   }
 

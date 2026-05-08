@@ -1,14 +1,24 @@
 {
   "name": "daily-diet-accounting-system",
-  "version": "1.0.0",
-  "description": "每日飲食記帳系統 - Daily Diet Accounting System",
+  "version": "2.0.0",
+  "type": "module",
   "scripts": {
-    "serve": "npx serve . -p 3000 -s",
-    "test": "playwright test --config=tests/playwright.config.ts",
-    "test:ui": "playwright test --config=tests/playwright.config.ts --ui"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "chart.js": "^4.4.4",
+    "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.44.0",
-    "serve": "^14.2.3"
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.8"
   }
 }

@@ -1,0 +1,296 @@
+:root {
+  /* Brand */
+  --color-primary: #16a34a;
+  --color-primary-dark: #15803d;
+  --color-primary-light: #4ade80;
+  --color-teal: #0d9488;
+
+  /* Surface */
+  --color-bg: #f7fdf9;
+  --color-card: #ffffff;
+
+  /* Text */
+  --color-text: #1e293b;
+  --color-text-secondary: #64748b;
+
+  /* Semantic */
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-success: #22c55e;
+  --color-info: #3b82f6;
+
+  /* Gradients */
+  --gradient-header:  linear-gradient(135deg, #22c55e 0%, #0d9488 100%);
+  --gradient-primary: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  --gradient-hover:   linear-gradient(135deg, #16a34a 0%, #0d9488 100%);
+  --gradient-auth-bg: linear-gradient(160deg, #ecfdf5 0%, #d1fae5 40%, #ccfbf1 100%);
+  --gradient-sidebar-active: linear-gradient(90deg, rgba(34,197,94,0.13) 0%, rgba(13,148,136,0.05) 100%);
+  --gradient-progress: linear-gradient(90deg, #4ade80 0%, #16a34a 100%);
+  --gradient-card-accent: linear-gradient(135deg, #22c55e, #0d9488);
+
+  /* Bootstrap success overrides */
+  --bs-success: #16a34a;
+  --bs-success-rgb: 22, 163, 74;
+  --bs-success-bg-subtle: #dcfce7;
+  --bs-success-border-subtle: #86efac;
+  --bs-success-text-emphasis: #14532d;
+  --bs-link-color: #16a34a;
+  --bs-link-hover-color: #15803d;
+
+  /* Layout */
+  --sidebar-width: 240px;
+  --header-height: 64px;
+  --bottom-nav-height: 60px;
+  --card-radius: 16px;
+  --btn-radius: 10px;
+}
+
+/* ── Base ────────────────────────────────────── */
+body {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+h1, h2, h3, h4, h5, h6 { font-weight: 500; }
+.fw-500 { font-weight: 500 !important; }
+
+/* ── Cards ───────────────────────────────────── */
+.card {
+  border: none !important;
+  border-radius: var(--card-radius) !important;
+  box-shadow: 0 2px 16px rgba(13, 148, 136, 0.07),
+              0 1px 4px  rgba(0, 0, 0, 0.05) !important;
+  transition: box-shadow 0.2s;
+}
+.card:hover {
+  box-shadow: 0 6px 24px rgba(13, 148, 136, 0.12),
+              0 2px 6px  rgba(0, 0, 0, 0.06) !important;
+}
+
+/* ── Buttons ─────────────────────────────────── */
+.btn { border-radius: var(--btn-radius) !important; transition: all 0.2s !important; }
+
+.btn-success {
+  background: var(--gradient-primary) !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em;
+}
+.btn-success:hover,
+.btn-success:focus {
+  background: var(--gradient-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35) !important;
+}
+.btn-success:active { transform: translateY(0) !important; }
+.btn-success:disabled { opacity: 0.65; transform: none !important; box-shadow: none !important; }
+
+.btn-outline-success {
+  color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  font-weight: 500 !important;
+}
+.btn-outline-success:hover,
+.btn-outline-success:focus {
+  background: var(--gradient-primary) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.25) !important;
+}
+.btn-outline-success.active {
+  background: var(--gradient-primary) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+/* ── Progress ────────────────────────────────── */
+.progress {
+  border-radius: 8px !important;
+  background-color: #e2e8f0 !important;
+  overflow: hidden;
+}
+.progress-bar:not(.bg-danger):not(.bg-warning) {
+  background: var(--gradient-progress) !important;
+  border-radius: 8px !important;
+}
+
+/* ── Badges ──────────────────────────────────── */
+.badge.text-bg-success,
+.badge.bg-success {
+  background: var(--gradient-primary) !important;
+}
+
+/* ── Loading overlay ─────────────────────────── */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* ── Layout ──────────────────────────────────── */
+.app-layout {
+  display: grid;
+  grid-template-areas: "header header" "sidebar main";
+  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-rows: var(--header-height) 1fr;
+  min-height: 100vh;
+}
+
+.app-header {
+  grid-area: header;
+  background: var(--gradient-header);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(13, 148, 136, 0.2);
+}
+
+.header-inner { height: var(--header-height); }
+
+.header-brand {
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+
+.app-sidebar {
+  grid-area: sidebar;
+  background-color: var(--color-card);
+  border-right: 1px solid rgba(22, 163, 74, 0.1);
+  position: sticky;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  grid-area: main;
+  overflow-y: auto;
+  min-height: calc(100vh - var(--header-height));
+}
+
+.app-bottom-nav { display: none !important; }
+
+@media (max-width: 767px) {
+  .app-layout {
+    grid-template-areas: "header" "main" "bottom-nav";
+    grid-template-columns: 1fr;
+    grid-template-rows: var(--header-height) 1fr var(--bottom-nav-height);
+  }
+  .app-sidebar { display: none !important; }
+  .app-bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: var(--bottom-nav-height);
+    background-color: var(--color-card);
+    border-top: 1px solid rgba(22, 163, 74, 0.1);
+    z-index: 100;
+    box-shadow: 0 -4px 16px rgba(13, 148, 136, 0.1);
+  }
+  .app-main { padding-bottom: calc(var(--bottom-nav-height) + 8px); }
+}
+
+/* ── Sidebar nav ─────────────────────────────── */
+.app-sidebar .nav-link {
+  color: var(--color-text);
+  border-left: 3px solid transparent;
+  border-radius: 0 var(--btn-radius) var(--btn-radius) 0;
+  margin: 1px 8px 1px 0;
+  transition: all 0.15s;
+}
+.app-sidebar .nav-link:hover {
+  background: var(--gradient-sidebar-active);
+  color: var(--color-primary);
+  border-left-color: var(--color-primary-light);
+}
+.app-sidebar .nav-link.active {
+  background: var(--gradient-sidebar-active);
+  color: var(--color-primary);
+  border-left-color: var(--color-primary);
+  font-weight: 600;
+}
+.sidebar-footer { margin-top: auto; }
+
+/* ── Bottom nav ──────────────────────────────── */
+.bottom-nav-item {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.bottom-nav-item:hover,
+.bottom-nav-item.active { color: var(--color-primary); }
+
+/* ── Auth pages ──────────────────────────────── */
+.auth-page {
+  background: var(--gradient-auth-bg);
+  min-height: 100vh;
+}
+.auth-card {
+  border: none;
+  box-shadow: 0 8px 40px rgba(13, 148, 136, 0.12),
+              0 2px 8px  rgba(0, 0, 0, 0.06) !important;
+}
+.auth-logo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px; height: 72px;
+  border-radius: 20px;
+  background: var(--gradient-primary);
+  box-shadow: 0 8px 24px rgba(22, 163, 74, 0.3);
+}
+
+/* ── Autocomplete ────────────────────────────── */
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%; left: 0; right: 0;
+  background: var(--color-card);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 200;
+  border-radius: 0 0 var(--btn-radius) var(--btn-radius);
+}
+.autocomplete-item {
+  cursor: pointer;
+  transition: background-color 0.1s;
+}
+.autocomplete-item:hover { background-color: rgba(34, 197, 94, 0.08); }
+
+/* ── Misc ────────────────────────────────────── */
+.progress { border-radius: 8px; background-color: #e2e8f0; }
+.toast { border-radius: var(--btn-radius) !important; }
+h1.h1, .h1 { font-size: 24px; }
+h2.h2, .h2 { font-size: 18px; }
+p, td, li { font-size: 14px; }
+
+@media (max-width: 320px) { body { font-size: 13px; } }
+
+/* ── Focus ───────────────────────────────────── */
+:focus-visible {
+  outline: 3px solid var(--color-primary-light);
+  outline-offset: 2px;
+}
+
+/* ── Scrollbar ───────────────────────────────── */
+.app-sidebar::-webkit-scrollbar,
+.app-main::-webkit-scrollbar { width: 4px; }
+.app-sidebar::-webkit-scrollbar-thumb,
+.app-main::-webkit-scrollbar-thumb {
+  background: rgba(22, 163, 74, 0.2);
+  border-radius: 2px;
+}
+
+/* ── Wide screen ─────────────────────────────── */
+@media (min-width: 1440px) {
+  .container-fluid { max-width: 1400px; margin: 0 auto; }
+}
