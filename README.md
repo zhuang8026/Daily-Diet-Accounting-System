@@ -112,8 +112,8 @@ Daily-Diet-Accounting-System/
 
 ### 環境需求
 
-- Node.js 18 以上
-- npm 9 以上
+- Node.js 22 以上
+- npm 10 以上
 
 ### 本地開發
 
