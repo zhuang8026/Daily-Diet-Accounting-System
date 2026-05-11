@@ -9,7 +9,7 @@ import {
   deleteFood,
   generateFoodId,
   importFoodsFromCsv
-} from '@/services/foodService'
+} from '@/assets/api/foodService'
 
 const CATEGORIES = ['主食', '蔬菜', '水果', '肉類', '蛋類', '乳製品', '飲料', '零食', '其他']
 const PAGE_SIZE = 20

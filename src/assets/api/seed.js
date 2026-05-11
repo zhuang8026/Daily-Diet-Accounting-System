@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs'
-import { setStorage, getStorage } from '@/services/storage'
-import { generateUUID, formatISO } from '@/services/utils'
+import { setStorage, getStorage } from '@/assets/api/storage'
+import { generateUUID, formatISO } from '@/assets/api/utils'
 
 const SEED_FOODS = [
   { foodId: 'F001', foodName: '白飯', category: '主食', servingSize: 200, servingUnit: '克（1 碗）', caloriesPerServing: 280, proteinPerServing: 5.0, fatPerServing: 0.5, carbPerServing: 62.0 },

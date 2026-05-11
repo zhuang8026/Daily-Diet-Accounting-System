@@ -3,8 +3,8 @@ import { Modal } from 'bootstrap'
 import bcrypt from 'bcryptjs'
 import { useToast } from '@/context/ToastContext'
 import { useAuth } from '@/context/AuthContext'
-import { getStorage, setStorage } from '@/services/storage'
-import { formatISO } from '@/services/utils'
+import { getStorage, setStorage } from '@/assets/api/storage'
+import { formatISO } from '@/assets/api/utils'
 
 export default function AdminUsers() {
   const { showToast } = useToast()

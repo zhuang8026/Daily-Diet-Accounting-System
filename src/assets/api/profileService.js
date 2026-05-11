@@ -3,8 +3,8 @@
  * 功能說明：使用者個人設定（生理資料、飲食目標）的讀寫服務
  */
 
-import { setStorage, getStorage } from '@/services/storage';
-import { formatISO } from '@/services/utils';
+import { setStorage, getStorage } from '@/assets/api/storage';
+import { formatISO } from '@/assets/api/utils';
 
 /**
  * 函式名稱：getProfile

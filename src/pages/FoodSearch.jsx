@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { Modal } from 'bootstrap'
 import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/context/ToastContext'
-import { getFoods } from '@/services/foodService'
-import { addRecord, getDailySummary } from '@/services/recordService'
-import { getTodayISO } from '@/services/utils'
+import { getFoods } from '@/assets/api/foodService'
+import { addRecord, getDailySummary } from '@/assets/api/recordService'
+import { getTodayISO } from '@/assets/api/utils'
 
 const CATEGORIES = ['全部', '主食', '蔬菜', '水果', '肉類', '蛋類', '乳製品', '飲料', '零食', '其他']
 

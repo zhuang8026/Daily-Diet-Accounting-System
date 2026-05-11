@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { register } from '@/services/auth'
-import { validateEmail, validatePassword } from '@/services/utils'
+import { register } from '@/assets/api/auth'
+import { validateEmail, validatePassword } from '@/assets/api/utils'
 import { useToast } from '@/context/ToastContext'
 
 const STRENGTH_LABEL = ['弱', '弱', '尚可', '強', '非常強']

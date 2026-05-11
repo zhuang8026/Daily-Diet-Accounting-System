@@ -6,8 +6,8 @@ import {
   addAnnouncement,
   updateAnnouncement,
   deleteAnnouncement
-} from '@/services/announcementService'
-import { getTodayISO, sanitizeInput } from '@/services/utils'
+} from '@/assets/api/announcementService'
+import { getTodayISO, sanitizeInput } from '@/assets/api/utils'
 
 const emptyForm = (today) => ({
   title: '',

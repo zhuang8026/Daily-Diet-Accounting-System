@@ -1,0 +1,38 @@
+// ── CSS Custom Properties ─────────────────────
+:root {
+  // Brand
+  --color-primary:       #{$primary};
+  --color-primary-dark:  #{$primary-dark};
+  --color-primary-light: #{$primary-light};
+  --color-teal:          #{$teal};
+
+  // Surface
+  --color-bg:   #{$color-bg};
+  --color-card: #{$color-card};
+
+  // Text
+  --color-text:           #{$color-text};
+  --color-text-secondary: #{$color-text-secondary};
+
+  // Semantic
+  --color-warning: #{$color-warning};
+  --color-error:   #{$color-error};
+  --color-success: #{$color-success};
+  --color-info:    #{$color-info};
+
+  // Bootstrap overrides
+  --bs-success:               #{$primary};
+  --bs-success-rgb:           22, 163, 74;
+  --bs-success-bg-subtle:     #dcfce7;
+  --bs-success-border-subtle: #{$primary-light};
+  --bs-success-text-emphasis: #14532d;
+  --bs-link-color:            #{$primary};
+  --bs-link-hover-color:      #{$primary-dark};
+
+  // Layout
+  --sidebar-width:     #{$sidebar-width};
+  --header-height:     #{$header-height};
+  --bottom-nav-height: #{$bottom-nav-height};
+  --card-radius:       #{$card-radius};
+  --btn-radius:        #{$btn-radius};
+}

@@ -13,7 +13,8 @@ export default defineConfig(({ command }) => ({
   css: {
     preprocessorOptions: {
       scss: {
-        api: 'modern-compiler'
+        api: 'modern-compiler',
+        additionalData: `@use '@/assets/scss/_variables.scss' as *;`
       }
     }
   }

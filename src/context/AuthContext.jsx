@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react'
-import { getCurrentSession, logout as authLogout } from '@/services/auth'
+import { getCurrentSession, logout as authLogout } from '@/assets/api/auth'
 
 const AuthContext = createContext(null)
 

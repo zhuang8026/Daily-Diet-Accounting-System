@@ -16,6 +16,7 @@
 | Bootstrap Icons | 1.11.3 | 圖示庫 |
 | Chart.js | 4.4.4 | 趨勢折線圖、甜甜圈圖 |
 | react-chartjs-2 | 5.2.0 | Chart.js 的 React 封裝 |
+| Sass | 1.99.0 | SCSS 預處理器 |
 | bcryptjs | 2.4.3 | 密碼雜湊（cost=12） |
 
 ---
@@ -38,7 +39,7 @@
 App.jsx（HashRouter + Providers + 路由守衛）
   └── Layout.jsx（Header / Sidebar / BottomNav）
         └── Pages（Dashboard / FoodSearch / Report / Settings / Admin*）
-              └── services/（純函式，讀寫 localStorage）
+              └── assets/api/（純函式，讀寫 localStorage）
                     └── storage.js（localStorage 封裝，含 7 天過期）
 ```
 
@@ -59,9 +60,10 @@ Daily-Diet-Accounting-System/
 ├── vite.config.js                    # Vite 設定（dev: /，build: /Daily-Diet-Accounting-System/）
 ├── package.json
 ├── src/
-│   ├── main.jsx                      # 入口點，載入 Bootstrap CSS/JS
+│   ├── main.jsx                      # 入口點，載入 Bootstrap CSS/JS 與全域 SCSS
 │   ├── App.jsx                       # 路由設定、守衛元件、初始化
-│   ├── index.css                     # 全域樣式、CSS Variables、RWD
+│   ├── router/
+│   │   └── index.js                  # 路由設定
 │   ├── context/
 │   │   ├── AuthContext.jsx           # 登入 Session 管理
 │   │   └── ToastContext.jsx          # 全域 Toast 通知
@@ -84,15 +86,20 @@ Daily-Diet-Accounting-System/
 │   │       ├── AdminRecords.jsx      # 飲食紀錄管理
 │   │       ├── AdminUsers.jsx        # 使用者管理
 │   │       └── AdminAnnouncements.jsx # 公告管理
-│   └── services/
-│       ├── storage.js                # localStorage 封裝（含 7 天過期）
-│       ├── utils.js                  # 工具函式（UUID、日期、BMR 計算等）
-│       ├── auth.js                   # 登入 / 註冊 / 登出
-│       ├── seed.js                   # 首次載入初始化（食物資料 + Demo 帳號）
-│       ├── recordService.js          # 飲食紀錄 CRUD
-│       ├── foodService.js            # 食物資料庫 CRUD + 搜尋
-│       ├── profileService.js         # 個人設定讀寫
-│       └── announcementService.js    # 公告 CRUD
+│   └── assets/
+│       ├── scss/
+│       │   ├── _variables.scss       # SCSS 變數（顏色、尺寸等，由 Vite 全域注入）
+│       │   ├── _root.scss            # CSS Custom Properties（:root）
+│       │   └── index.scss            # 全域樣式、元件、RWD
+│       └── api/
+│           ├── storage.js            # localStorage 封裝（含 7 天過期）
+│           ├── utils.js              # 工具函式（UUID、日期、BMR 計算等）
+│           ├── auth.js               # 登入 / 註冊 / 登出
+│           ├── seed.js               # 首次載入初始化（食物資料 + Demo 帳號）
+│           ├── recordService.js      # 飲食紀錄 CRUD
+│           ├── foodService.js        # 食物資料庫 CRUD + 搜尋
+│           ├── profileService.js     # 個人設定讀寫
+│           └── announcementService.js # 公告 CRUD
 ├── docs/
 │   ├── bdd.feature                   # BDD Gherkin 測試案例
 │   └── use-case.drawio               # Use Case 圖（draw.io）

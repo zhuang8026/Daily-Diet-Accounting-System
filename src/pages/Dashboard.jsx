@@ -4,11 +4,11 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Doughnut } from 'react-chartjs-2'
 import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/context/ToastContext'
-import { getRecords, addRecord, updateRecord, deleteRecord, getDailySummary } from '@/services/recordService'
-import { searchFoods, getFoodById } from '@/services/foodService'
-import { getTargets } from '@/services/profileService'
-import { getActiveAnnouncement } from '@/services/announcementService'
-import { getTodayISO, formatDateDisplay, offsetDate, getMealLabel, sanitizeInput } from '@/services/utils'
+import { getRecords, addRecord, updateRecord, deleteRecord, getDailySummary } from '@/assets/api/recordService'
+import { searchFoods, getFoodById } from '@/assets/api/foodService'
+import { getTargets } from '@/assets/api/profileService'
+import { getActiveAnnouncement } from '@/assets/api/announcementService'
+import { getTodayISO, formatDateDisplay, offsetDate, getMealLabel, sanitizeInput } from '@/assets/api/utils'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
