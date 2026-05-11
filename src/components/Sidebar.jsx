@@ -20,7 +20,7 @@ export default function Sidebar({ session }) {
   if (!session) return null
 
   const navItems = session.role === 'admin' ? ADMIN_NAV : USER_NAV
-  const currentPath = location.hash.replace('#', '') || '/'
+  const currentPath = location.pathname || '/'
 
   return (
     <>

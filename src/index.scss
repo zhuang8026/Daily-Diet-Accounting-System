@@ -1,0 +1,360 @@
+// ── SCSS Variables ────────────────────────────
+$primary:             #16a34a;
+$primary-dark:        #15803d;
+$primary-light:       #4ade80;
+$teal:                #0d9488;
+
+$color-bg:            #f7fdf9;
+$color-card:          #ffffff;
+$color-text:          #1e293b;
+$color-text-secondary:#64748b;
+$color-warning:       #f59e0b;
+$color-error:         #ef4444;
+$color-success:       #22c55e;
+$color-info:          #3b82f6;
+
+$gradient-header:         linear-gradient(135deg, #22c55e 0%, #0d9488 100%);
+$gradient-primary:        linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+$gradient-hover:          linear-gradient(135deg, #16a34a 0%, #0d9488 100%);
+$gradient-auth-bg:        linear-gradient(160deg, #ecfdf5 0%, #d1fae5 40%, #ccfbf1 100%);
+$gradient-sidebar-active: linear-gradient(90deg, rgba(34,197,94,.13) 0%, rgba(13,148,136,.05) 100%);
+$gradient-progress:       linear-gradient(90deg, #4ade80 0%, #16a34a 100%);
+$gradient-card-accent:    linear-gradient(135deg, #22c55e, #0d9488);
+
+$sidebar-width:     240px;
+$header-height:     64px;
+$bottom-nav-height: 60px;
+$card-radius:       16px;
+$btn-radius:        10px;
+
+
+// ── CSS Custom Properties ─────────────────────
+:root {
+  // Brand
+  --color-primary:       #{$primary};
+  --color-primary-dark:  #{$primary-dark};
+  --color-primary-light: #{$primary-light};
+  --color-teal:          #{$teal};
+
+  // Surface
+  --color-bg:   #{$color-bg};
+  --color-card: #{$color-card};
+
+  // Text
+  --color-text:           #{$color-text};
+  --color-text-secondary: #{$color-text-secondary};
+
+  // Semantic
+  --color-warning: #{$color-warning};
+  --color-error:   #{$color-error};
+  --color-success: #{$color-success};
+  --color-info:    #{$color-info};
+
+  // Bootstrap overrides
+  --bs-success:              #{$primary};
+  --bs-success-rgb:          22, 163, 74;
+  --bs-success-bg-subtle:    #dcfce7;
+  --bs-success-border-subtle:#86efac;
+  --bs-success-text-emphasis:#14532d;
+  --bs-link-color:           #{$primary};
+  --bs-link-hover-color:     #{$primary-dark};
+
+  // Layout
+  --sidebar-width:     #{$sidebar-width};
+  --header-height:     #{$header-height};
+  --bottom-nav-height: #{$bottom-nav-height};
+  --card-radius:       #{$card-radius};
+  --btn-radius:        #{$btn-radius};
+}
+
+
+// ── Base ──────────────────────────────────────
+body {
+  font-size: 15px;
+  line-height: 1.75;
+  color: $color-text;
+  background-color: $color-bg;
+}
+
+h1, h2, h3, h4, h5, h6 { font-weight: 500; }
+.fw-500 { font-weight: 500 !important; }
+
+
+// ── Cards ─────────────────────────────────────
+.card {
+  border: none !important;
+  border-radius: $card-radius !important;
+  box-shadow:
+    0 2px 16px rgba($teal, .07),
+    0 1px 4px  rgba(#000, .05) !important;
+  transition: box-shadow .2s;
+
+  &:hover {
+    box-shadow:
+      0 6px 24px rgba($teal, .12),
+      0 2px 6px  rgba(#000, .06) !important;
+  }
+}
+
+
+// ── Buttons ───────────────────────────────────
+.btn {
+  border-radius: $btn-radius !important;
+  transition: all .2s !important;
+}
+
+.btn-success {
+  background: $gradient-primary !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 500 !important;
+  letter-spacing: .01em;
+
+  &:hover,
+  &:focus {
+    background: $gradient-hover !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba($primary, .35) !important;
+  }
+
+  &:active  { transform: translateY(0) !important; }
+
+  &:disabled {
+    opacity: .65;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+.btn-outline-success {
+  color: $primary !important;
+  border-color: $primary !important;
+  font-weight: 500 !important;
+
+  &:hover,
+  &:focus {
+    background: $gradient-primary !important;
+    border-color: transparent !important;
+    color: #fff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba($primary, .25) !important;
+  }
+
+  &.active {
+    background: $gradient-primary !important;
+    border-color: transparent !important;
+    color: #fff !important;
+  }
+}
+
+
+// ── Progress ──────────────────────────────────
+.progress {
+  border-radius: 8px !important;
+  background-color: #e2e8f0 !important;
+  overflow: hidden;
+
+  &-bar:not(.bg-danger):not(.bg-warning) {
+    background: $gradient-progress !important;
+    border-radius: 8px !important;
+  }
+}
+
+
+// ── Badges ────────────────────────────────────
+.badge {
+  &.text-bg-success,
+  &.bg-success {
+    background: $gradient-primary !important;
+  }
+}
+
+
+// ── Loading overlay ───────────────────────────
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: $color-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+
+// ── Layout ────────────────────────────────────
+.app-layout {
+  display: grid;
+  grid-template-areas: "header header" "sidebar main";
+  grid-template-columns: $sidebar-width 1fr;
+  grid-template-rows: $header-height 1fr;
+  min-height: 100vh;
+}
+
+.app-header {
+  grid-area: header;
+  background: $gradient-header;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba($teal, .2);
+}
+
+.header-inner { height: $header-height; }
+
+.header-brand {
+  font-size: 1.05rem;
+  letter-spacing: .01em;
+}
+
+.app-sidebar {
+  grid-area: sidebar;
+  background-color: $color-card;
+  border-right: 1px solid rgba($primary, .1);
+  position: sticky;
+  top: $header-height;
+  height: calc(100vh - #{$header-height});
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+
+  .nav-link {
+    color: $color-text;
+    border-left: 3px solid transparent;
+    border-radius: 0 $btn-radius $btn-radius 0;
+    margin: 1px 8px 1px 0;
+    transition: all .15s;
+
+    &:hover {
+      background: $gradient-sidebar-active;
+      color: $primary;
+      border-left-color: $primary-light;
+    }
+
+    &.active {
+      background: $gradient-sidebar-active;
+      color: $primary;
+      border-left-color: $primary;
+      font-weight: 600;
+    }
+  }
+
+  &::-webkit-scrollbar       { width: 4px; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba($primary, .2);
+    border-radius: 2px;
+  }
+}
+
+.sidebar-footer { margin-top: auto; }
+
+.app-main {
+  grid-area: main;
+  overflow-y: auto;
+  min-height: calc(100vh - #{$header-height});
+
+  &::-webkit-scrollbar       { width: 4px; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba($primary, .2);
+    border-radius: 2px;
+  }
+}
+
+.app-bottom-nav { display: none !important; }
+
+@media (max-width: 767px) {
+  .app-layout {
+    grid-template-areas: "header" "main" "bottom-nav";
+    grid-template-columns: 1fr;
+    grid-template-rows: $header-height 1fr $bottom-nav-height;
+  }
+
+  .app-sidebar { display: none !important; }
+
+  .app-bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: $bottom-nav-height;
+    background-color: $color-card;
+    border-top: 1px solid rgba($primary, .1);
+    z-index: 100;
+    box-shadow: 0 -4px 16px rgba($teal, .1);
+  }
+
+  .app-main { padding-bottom: calc(#{$bottom-nav-height} + 8px); }
+}
+
+
+// ── Bottom nav ────────────────────────────────
+.bottom-nav-item {
+  color: $color-text-secondary;
+  text-decoration: none;
+  transition: color .15s;
+
+  &:hover,
+  &.active { color: $primary; }
+}
+
+
+// ── Auth pages ────────────────────────────────
+.auth-page {
+  background: $gradient-auth-bg;
+  min-height: 100vh;
+}
+
+.auth-card {
+  border: none;
+  box-shadow:
+    0 8px 40px rgba($teal, .12),
+    0 2px 8px  rgba(#000, .06) !important;
+}
+
+.auth-logo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: $gradient-primary;
+  box-shadow: 0 8px 24px rgba($primary, .3);
+}
+
+
+// ── Autocomplete ──────────────────────────────
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%; left: 0; right: 0;
+  background: $color-card;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 200;
+  border-radius: 0 0 $btn-radius $btn-radius;
+}
+
+.autocomplete-item {
+  cursor: pointer;
+  transition: background-color .1s;
+
+  &:hover { background-color: rgba($color-success, .08); }
+}
+
+
+// ── Misc ──────────────────────────────────────
+.toast { border-radius: $btn-radius !important; }
+
+h1.h1, .h1 { font-size: 24px; }
+h2.h2, .h2 { font-size: 18px; }
+p, td, li   { font-size: 14px; }
+
+:focus-visible {
+  outline: 3px solid $primary-light;
+  outline-offset: 2px;
+}
+
+@media (max-width: 320px) { body { font-size: 13px; } }
+
+@media (min-width: 1440px) {
+  .container-fluid { max-width: 1400px; margin: 0 auto; }
+}
