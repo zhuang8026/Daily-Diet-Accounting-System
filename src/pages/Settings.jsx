@@ -51,6 +51,12 @@ export default function Settings() {
 
   const set = (field) => (e) => setForm(f => ({ ...f, [field]: e.target.value }))
 
+  const setAndSave = (field) => (e) => {
+    const value = e.target.value
+    setForm(f => ({ ...f, [field]: value }))
+    updateProfile(session.userId, { [field]: value })
+  }
+
   const calcBMR = () => {
     const age = parseInt(form.age, 10)
     const h = parseFloat(form.heightCm)
@@ -65,6 +71,7 @@ export default function Settings() {
   const applySuggested = () => {
     if (suggestedCal) {
       setForm(f => ({ ...f, targetCalories: suggestedCal }))
+      updateProfile(session.userId, { targetCalories: suggestedCal })
       showToast(`已套用建議熱量 ${suggestedCal} kcal`, 'info')
     } else {
       showToast('請先填寫完整生理資料', 'warning')
@@ -160,7 +167,7 @@ export default function Settings() {
               {GOAL_OPTIONS.map(({ value, label }) => (
                 <div className="col-12 col-sm-4" key={value}>
                   <div className={`form-check border rounded p-3 h-100 ${form.dietGoal === value ? 'border-success' : ''}`}>
-                    <input className="form-check-input" type="radio" name="dietGoal" id={`goal-${value}`} value={value} checked={form.dietGoal === value} onChange={set('dietGoal')} />
+                    <input className="form-check-input" type="radio" name="dietGoal" id={`goal-${value}`} value={value} checked={form.dietGoal === value} onChange={setAndSave('dietGoal')} />
                     <label className="form-check-label fw-500" htmlFor={`goal-${value}`}>{label}</label>
                   </div>
                 </div>
@@ -184,7 +191,12 @@ export default function Settings() {
               <div className="col-6 col-sm-3" key={field}>
                 <label htmlFor={field} className="form-label">{label}{req && <span className="text-danger"> *</span>}</label>
                 <div className="input-group">
-                  <input type="number" id={field} className={`form-control ${errors[field] ? 'is-invalid' : ''}`} value={form[field]} onChange={set(field)} min={req ? 500 : 0} step={unit === 'g' ? 0.1 : 1} data-testid={testid || undefined} />
+                  <input 
+                    type="number" id={field} className={`form-control ${errors[field] ? 'is-invalid' : ''}`} 
+                    value={form[field]} 
+                    onChange={set(field)} min={req ? 500 : 0} step={unit === 'g' ? 0.1 : 1} 
+                    data-testid={testid || undefined} 
+                  />
                   <span className="input-group-text">{unit}</span>
                 </div>
                 {errors[field] && <div className="invalid-feedback d-block">{errors[field]}</div>}
