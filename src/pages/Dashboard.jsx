@@ -222,11 +222,17 @@ export default function Dashboard() {
             return (
               <div className="accordion-item" key={mealType}>
                 <h2 className="accordion-header">
-                  <button className={`accordion-button ${idx !== 0 ? 'collapsed' : ''}`} type="button" data-bs-toggle="collapse" data-bs-target={`#${collapseId}`} aria-expanded={idx === 0} aria-controls={collapseId}>
+                  <button 
+                    className={`accordion-button ${idx !== 0 ? 'collapsed' : ''}`} 
+                    type="button" 
+                    data-bs-toggle="collapse" data-bs-target={`#${collapseId}`} 
+                    aria-expanded={idx === 0} 
+                    aria-controls={collapseId}
+                  >
                     <span className="me-2">{MEAL_ICONS[mealType]}</span>
                     <strong>{getMealLabel(mealType)}</strong>
                     <span className="badge bg-secondary ms-2">{mealCal} kcal</span>
-                    <span className="badge bg-light text-secondary ms-1">{mealRecords.length} 筆</span>
+                    <span className="badge bg-light text-secondary ms-2">{mealRecords.length} 筆</span>
                   </button>
                 </h2>
                 <div id={collapseId} className={`accordion-collapse collapse ${idx === 0 ? 'show' : ''}`} data-bs-parent="#meal-accordion">

@@ -25,7 +25,7 @@ export default function Sidebar({ session }) {
   return (
     <>
       <div className="sidebar-brand p-3 border-bottom">
-        <i className="bi bi-clipboard2-heart-fill text-success me-2"></i>
+        {/* <i className="bi bi-clipboard2-heart-fill text-success me-2"></i> */}
         <span className="fw-bold small">{session.role === 'admin' ? '後台管理' : '飲食記帳'}</span>
       </div>
       <ul className="nav flex-column p-2" role="list">
@@ -33,7 +33,7 @@ export default function Sidebar({ session }) {
           <li className="nav-item" role="listitem" key={item.path}>
             <Link
               to={item.path}
-              className={`nav-link d-flex align-items-center gap-2 rounded px-3 py-2 ${currentPath === item.path ? 'active' : ''}`}
+              className={`nav-link d-flex align-items-center gap-2 px-3 py-2 ${currentPath === item.path ? 'active' : ''}`}
               aria-current={currentPath === item.path ? 'page' : undefined}
             >
               <i className={`bi ${item.icon}`}></i>

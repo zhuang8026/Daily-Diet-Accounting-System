@@ -120,7 +120,7 @@ export default function FoodSearch() {
               <div className="card-body p-3">
                 <div className="d-flex justify-content-between align-items-start mb-2">
                   <span className="fw-bold">{f.foodName}</span>
-                  <span className="badge" style={{ backgroundColor: 'var(--color-primary)' }}>{f.category}</span>
+                  <span className="badge">{f.category}</span>
                 </div>
                 <div className="small text-secondary mb-2">{f.servingUnit}</div>
                 <div className="d-flex gap-2 flex-wrap small">

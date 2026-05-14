@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { login } from '@/assets/api/auth'
 import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/context/ToastContext'
+import '@/assets/scss/_login.scss'
 
 export default function Login() {
   const { refresh } = useAuth()
@@ -73,13 +74,14 @@ export default function Login() {
               <label htmlFor="login-password" className="form-label">密碼</label>
               <div className="input-group">
                 <input
-                  type={showPwd ? 'text' : 'password'} id="login-password"
-                  className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                  type={showPwd ? 'text' : 'password'} 
+                  id="login-password"
+                  className={`password-input form-control ${errors.password ? 'is-invalid' : ''}`}
                   placeholder="請輸入密碼" autoComplete="current-password"
                   value={password} onChange={e => setPassword(e.target.value)}
                   data-testid="login-password"
                 />
-                <button type="button" className="btn btn-outline-secondary" onClick={() => setShowPwd(v => !v)} aria-label="顯示或隱藏密碼">
+                <button type="button" className="btn btn-outline-secondary show-password-btn" onClick={() => setShowPwd(v => !v)} aria-label="顯示或隱藏密碼">
                   <i className={`bi ${showPwd ? 'bi-eye-slash' : 'bi-eye'}`}></i>
                 </button>
                 {errors.password && <div className="invalid-feedback">{errors.password}</div>}

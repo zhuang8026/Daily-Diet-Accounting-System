@@ -30,7 +30,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 500; }
 
 // ── Buttons ───────────────────────────────────
 .btn {
-  border-radius: $btn-radius !important;
+  border-radius: $btn-radius;
   transition: all .2s !important;
 }
 
@@ -94,6 +94,8 @@ h1, h2, h3, h4, h5, h6 { font-weight: 500; }
 
 // ── Badges ────────────────────────────────────
 .badge {
+  background-color: $primary;
+  padding: 10px;
   &.text-bg-success,
   &.bg-success {
     background: $gradient-primary !important;
@@ -124,7 +126,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 500; }
 
 .app-header {
   grid-area: header;
-  background: $gradient-header;
+  background: $teal;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -166,7 +168,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 500; }
       background: $gradient-sidebar-active;
       color: $primary;
       border-left-color: $primary;
-      font-weight: 600;
+      // font-weight: 600;
     }
   }
 
@@ -269,6 +271,18 @@ h1, h2, h3, h4, h5, h6 { font-weight: 500; }
   transition: background-color .1s;
 
   &:hover { background-color: rgba($color-success, .08); }
+}
+
+
+// ── Accordion ─────────────────────────────────
+.accordion-button:not(.collapsed) {
+  background: $table-bg !important;
+  color: $color-text !important;
+  box-shadow: none !important;
+}
+
+.accordion-button:focus {
+  box-shadow: none !important;
 }
 
 

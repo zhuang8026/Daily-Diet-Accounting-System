@@ -125,7 +125,7 @@ export default function Report() {
     <div className="container-fluid p-3">
       <div className="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <h1 className="h5 fw-500 mb-0">趨勢報表</h1>
-        <div className="btn-group" role="group" aria-label="報表時間範圍">
+        <div className="" role="group" aria-label="報表時間範圍">
           {['7', '30'].map(d => (
             <label key={d} className={`ms-2 btn btn-outline-success ${days === d ? 'active' : ''}`}>
               <input type="radio" name="range" value={d} checked={days === d} onChange={() => setDays(d)} className="btn-check" data-testid={`range-${d}`} />
