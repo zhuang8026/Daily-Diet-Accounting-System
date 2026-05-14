@@ -207,7 +207,7 @@ export default function AdminRecords() {
             ) : (
               records.map(r => (
                 <tr key={r.recordId}>
-                  <td className="text-secondary small font-monospace">{r.recordId.slice(0, 8)}</td>
+                  <td className="text-secondary small font-monospace">{r.recordId}</td>
                   <td>
                     <div>{r.displayName}</div>
                     <div className="text-secondary small">{r.userEmail}</div>

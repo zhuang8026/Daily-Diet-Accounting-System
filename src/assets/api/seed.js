@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs'
 import { setStorage, getStorage } from '@/assets/api/storage'
 import { generateUUID, formatISO } from '@/assets/api/utils'
+import demoRecords from '@/assets/api/demoRecords.json'
 
 const SEED_FOODS = [
   { foodId: 'F001', foodName: '白飯', category: '主食', servingSize: 200, servingUnit: '克（1 碗）', caloriesPerServing: 280, proteinPerServing: 5.0, fatPerServing: 0.5, carbPerServing: 62.0 },
@@ -46,6 +47,9 @@ const initSeed = async () => {
   ]
   setStorage('ddas_users', users)
   setStorage('ddas_announcements', [])
+
+  // 寫入 demo 使用者的測試飲食紀錄（5/1 ~ 5/15）
+  setStorage('ddas_records_user-demo-001', demoRecords)
 }
 
 export { initSeed }
