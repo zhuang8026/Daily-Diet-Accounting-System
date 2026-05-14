@@ -65,7 +65,7 @@ export default function App() {
       <div className="loading-overlay" role="status" aria-label="系統初始化中">
         <div className="text-center">
           <div className="spinner-border text-success mb-3" style={{ width: '3rem', height: '3rem' }} aria-hidden="true"></div>
-          <p className="text-secondary">每日飲食記帳系統初始化中...</p>
+          <p className="text-secondary">飲食與熱量紀錄系統初始化中...</p>
           <p className="text-secondary small">首次載入需建立示範資料，請稍候</p>
         </div>
       </div>

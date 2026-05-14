@@ -78,7 +78,7 @@ export default function Login() {
                   id="login-password"
                   className={`password-input form-control ${errors.password ? 'is-invalid' : ''}`}
                   placeholder="請輸入密碼" autoComplete="current-password"
-                  value={password} onChange={e => setPassword(e.target.value)}
+                  value={password} onChange={e => setPassword(e.target.value.trim())}
                   data-testid="login-password"
                 />
                 <button type="button" className="btn btn-outline-secondary show-password-btn" onClick={() => setShowPwd(v => !v)} aria-label="顯示或隱藏密碼">

@@ -5,7 +5,7 @@ export default function About() {
     <div className="container py-5" style={{ maxWidth: 760 }}>
       <div className="text-center mb-5">
         <i className="bi bi-clipboard2-heart-fill text-success" style={{ fontSize: '3rem' }}></i>
-        <h1 className="mt-3">每日飲食記帳系統</h1>
+        <h1 className="mt-3">飲食與熱量紀錄系統</h1>
         <p className="lead text-secondary">輕鬆記錄飲食、精準追蹤營養、達成健康目標</p>
         <div className="mt-4 d-flex gap-3 justify-content-center flex-wrap">
           <Link to="/login" className="btn btn-success px-4">立即登入</Link>

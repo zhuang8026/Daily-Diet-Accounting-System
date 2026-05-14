@@ -17,7 +17,7 @@ export default function Header({ session }) {
       <div className="d-flex align-items-center gap-2">
         <a href="#/dashboard" className="header-brand text-white text-decoration-none fw-bold">
           <i className="bi bi-clipboard2-heart-fill me-2"></i>
-          <span className="d-none d-sm-inline">每日飲食記帳系統</span>
+          <span className="d-none d-sm-inline">飲食與熱量紀錄系統</span>
           <span className="d-sm-none">飲食記帳</span>
         </a>
       </div>

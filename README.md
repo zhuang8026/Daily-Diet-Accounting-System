@@ -1,4 +1,4 @@
-# 每日飲食記帳系統（Daily Diet Accounting System）
+# 飲食與熱量紀錄系統（Daily Diet Accounting System）
 
 記錄三餐、追蹤熱量與三大營養素，支援個人目標設定與趨勢報表，並提供管理員後台。
 
@@ -102,7 +102,17 @@ Daily-Diet-Accounting-System/
 │           └── announcementService.js # 公告 CRUD
 ├── docs/
 │   ├── bdd.feature                   # BDD Gherkin 測試案例
-│   └── use-case.drawio               # Use Case 圖（draw.io）
+│   ├── flow/
+│   │   ├── drawio/
+│   │   │   ├── system-flow.drawio    # 系統架構圖
+│   │   │   ├── program-flow.drawio   # 程式流程圖
+│   │   │   ├── data-flow(DFD).drawio # DFD 資料流程圖
+│   │   │   └── user-flow.drawio      # 使用者行為描述圖（Use Case）
+│   │   └── pdf/                      # 各圖 PDF 匯出版本
+│   └── SRS/
+│       ├── SRS.html                  # 系統需求規格書（HTML）
+│       ├── 飲食與熱量紀錄系統_需求規格書.docx  # 系統需求規格書（Word）
+│       └── 飲食與熱量紀錄系統_需求規格書.txt   # 系統需求規格書（純文字）
 └── tests/
     ├── playwright.config.ts
     ├── auth.spec.ts
@@ -229,7 +239,7 @@ localStorage 可能殘留損壞資料，請依下列步驟清除後重試：
 | 今日總覽 | `#/dashboard` | 查看當日熱量環形圖與三大營養素進度、依餐別新增／編輯／刪除紀錄、瀏覽歷史日期 |
 | 食物搜尋 | `#/food-search` | 依名稱、類別、熱量範圍搜尋食物，加入當日飲食紀錄 |
 | 趨勢報表 | `#/report` | 近 7 天 / 30 天熱量趨勢折線圖、三大營養素比例圓餅圖、摘要統計 |
-| 個人設定 | `#/settings` | 設定身高、體重、活動量、飲食目標，Harris-Benedict 公式自動計算建議熱量 |
+| 個人設定 | `#/settings` | 設定身高、體重、活動量、飲食目標，Mifflin-St Jeor 公式自動計算建議熱量 |
 
 ### 管理員
 

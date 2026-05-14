@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>系統需求規格書 — Daily Diet Accounting System</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --accent: #7c3aed;
+      --success: #059669;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans TC', 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    /* ── Cover ── */
+    .cover {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 40%, #7c3aed 100%);
+      color: #fff;
+      padding: 80px 60px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cover::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+    }
+    .cover::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: 30%;
+      width: 240px; height: 240px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+    }
+    .cover-label {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 20px;
+      padding: 4px 16px;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .cover h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .cover h2 {
+      font-size: 1.1rem;
+      font-weight: 400;
+      opacity: 0.8;
+      margin-bottom: 40px;
+    }
+    .cover-meta {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      opacity: 0.75;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      padding-top: 24px;
+    }
+    .cover-meta span strong { opacity: 1; display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 40px;
+    }
+
+    /* ── TOC ── */
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 48px;
+    }
+    .toc h3 { font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+    .toc ol { padding-left: 20px; }
+    .toc li { margin-bottom: 6px; }
+    .toc a { color: var(--primary); text-decoration: none; font-size: 14px; }
+    .toc a:hover { text-decoration: underline; }
+    .toc li li { margin-top: 4px; color: var(--text-muted); }
+
+    /* ── Section ── */
+    .chapter {
+      margin-bottom: 56px;
+    }
+    .chapter-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--border);
+    }
+    .chapter-num {
+      background: var(--primary);
+      color: #fff;
+      border-radius: 10px;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .chapter-title h2 { font-size: 1.4rem; font-weight: 700; color: var(--text); }
+    .chapter-title p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Sub-section ── */
+    .section { margin-bottom: 32px; }
+    .section h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 12px;
+      padding-left: 12px;
+      border-left: 3px solid var(--primary);
+    }
+    .section h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 16px 0 8px;
+    }
+
+    /* ── Cards / Tables ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    thead th {
+      background: #f1f5f9;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+    tbody td {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.6;
+    }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+
+    /* ── Requirement items ── */
+    .req-list { list-style: none; padding: 0; }
+    .req-list li {
+      display: flex;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 14px;
+      align-items: flex-start;
+    }
+    .req-list li:last-child { border-bottom: none; }
+    .req-id {
+      background: #eff6ff;
+      color: var(--primary);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+    .req-id.sec { background: #f0fdf4; color: var(--success); }
+    .req-id.ui  { background: #faf5ff; color: var(--accent); }
+    .req-id.tech { background: #fff7ed; color: var(--warning); }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-block;
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-must  { background: #fee2e2; color: #991b1b; }
+    .badge-should { background: #fef3c7; color: #92400e; }
+    .badge-could  { background: #d1fae5; color: #065f46; }
+
+    /* ── Info box ── */
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 13.5px;
+      color: #1e40af;
+      margin-bottom: 16px;
+    }
+    .warn-box {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 13.5px;
+      color: #9a3412;
+      margin-bottom: 16px;
+    }
+
+    /* ── Tech stack grid ── */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .tech-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+    .tech-card .name { font-weight: 700; font-size: 14px; }
+    .tech-card .ver  { font-size: 12px; color: var(--primary); margin-bottom: 4px; }
+    .tech-card .desc { font-size: 12px; color: var(--text-muted); }
+
+    /* ── Role grid ── */
+    .role-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .role-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .role-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .role-card ul { padding-left: 18px; font-size: 13.5px; color: var(--text-muted); }
+    .role-card ul li { margin-bottom: 4px; }
+
+    footer {
+      text-align: center;
+      padding: 32px;
+      font-size: 12px;
+      color: var(--text-light);
+      border-top: 1px solid var(--border);
+    }
+
+    @media print {
+      .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════ COVER ══════════════════════ -->
+<div class="cover">
+  <div class="cover-label">Software Requirements Specification</div>
+  <h1>Daily Diet Accounting System</h1>
+  <h2>飲食與熱量紀錄系統 — 系統需求規格書</h2>
+  <div class="cover-meta">
+    <span><strong>文件版本</strong>v2.0.0</span>
+    <span><strong>建立日期</strong>2026-05-14</span>
+    <span><strong>課程</strong>JavaScript 網頁設計</span>
+    <span><strong>學校</strong>淡江大學</span>
+    <span><strong>狀態</strong>正式版</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ══════════ TOC ══════════ -->
+  <div class="toc">
+    <h3>目錄</h3>
+    <ol>
+      <li><a href="#s1">系統名稱與概述</a>
+        <ol>
+          <li><a href="#s1-1">系統名稱</a></li>
+          <li><a href="#s1-2">系統背景與目的</a></li>
+          <li><a href="#s1-3">使用者角色</a></li>
+          <li><a href="#s1-4">系統範疇</a></li>
+        </ol>
+      </li>
+      <li><a href="#s2">功能性需求</a>
+        <ol>
+          <li><a href="#s2-1">身份驗證模組</a></li>
+          <li><a href="#s2-2">飲食紀錄模組</a></li>
+          <li><a href="#s2-3">食物資料庫模組</a></li>
+          <li><a href="#s2-4">個人設定模組</a></li>
+          <li><a href="#s2-5">趨勢報表模組</a></li>
+          <li><a href="#s2-6">管理員後台模組</a></li>
+          <li><a href="#s2-7">系統公告模組</a></li>
+        </ol>
+      </li>
+      <li><a href="#s3">UI/UX 設計要求</a>
+        <ol>
+          <li><a href="#s3-1">整體設計原則</a></li>
+          <li><a href="#s3-2">版面配置</a></li>
+          <li><a href="#s3-3">互動設計</a></li>
+          <li><a href="#s3-4">視覺化元件</a></li>
+          <li><a href="#s3-5">無障礙設計</a></li>
+        </ol>
+      </li>
+      <li><a href="#s4">技術規格要求</a>
+        <ol>
+          <li><a href="#s4-1">技術堆疊</a></li>
+          <li><a href="#s4-2">資料儲存規格</a></li>
+          <li><a href="#s4-3">元件架構規格</a></li>
+          <li><a href="#s4-4">效能要求</a></li>
+        </ol>
+      </li>
+      <li><a href="#s5">資安要求</a>
+        <ol>
+          <li><a href="#s5-1">密碼安全</a></li>
+          <li><a href="#s5-2">存取控制</a></li>
+          <li><a href="#s5-3">輸入驗證</a></li>
+          <li><a href="#s5-4">資料保護</a></li>
+        </ol>
+      </li>
+    </ol>
+  </div>
+
+  <!-- ══════════ 1. 系統名稱 ══════════ -->
+  <div class="chapter" id="s1">
+    <div class="chapter-header">
+      <div class="chapter-num">1</div>
+      <div class="chapter-title">
+        <h2>系統名稱與概述</h2>
+        <p>系統定義、目的、使用者角色與系統範疇</p>
+      </div>
+    </div>
+
+    <div class="section" id="s1-1">
+      <h3>1.1 系統名稱</h3>
+      <div class="card">
+        <table>
+          <tbody>
+            <tr><td style="width:180px;font-weight:600;">中文名稱</td><td>飲食與熱量紀錄系統</td></tr>
+            <tr><td style="font-weight:600;">英文名稱</td><td>Daily Diet Accounting System（DDAS）</td></tr>
+            <tr><td style="font-weight:600;">系統版本</td><td>v2.0.0</td></tr>
+            <tr><td style="font-weight:600;">系統類型</td><td>純前端單頁應用程式（SPA）</td></tr>
+            <tr><td style="font-weight:600;">部署方式</td><td>靜態網頁，無需後端伺服器，使用 Vite 建置</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section" id="s1-2">
+      <h3>1.2 系統背景與目的</h3>
+      <p style="margin-bottom:12px;font-size:14px;color:var(--text-muted);">
+        本系統為淡江大學 JavaScript 網頁設計課程之期末專題，旨在提供使用者一個便利的飲食記錄與熱量追蹤工具。
+        系統完全執行於瀏覽器端，利用 localStorage 儲存所有資料，不依賴後端 API 或資料庫伺服器。
+      </p>
+      <div class="card">
+        <div class="card-title">核心目標</div>
+        <ul style="padding-left:20px;font-size:14px;line-height:2;">
+          <li>提供直覺的每日 4 餐（早/午/晚/點心）飲食紀錄功能</li>
+          <li>追蹤熱量及三大巨量營養素（蛋白質、脂肪、碳水化合物）</li>
+          <li>根據個人身體數據（BMR）計算每日目標熱量</li>
+          <li>透過圖表視覺化呈現週/月飲食趨勢</li>
+          <li>提供管理員後台維護食物資料庫與用戶帳號</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section" id="s1-3">
+      <h3>1.3 使用者角色</h3>
+      <div class="role-grid">
+        <div class="role-card">
+          <h4>👤 一般使用者（User）</h4>
+          <ul>
+            <li>自行註冊帳號</li>
+            <li>記錄每日飲食攝取</li>
+            <li>查看個人營養摘要與趨勢</li>
+            <li>設定個人身體數據與飲食目標</li>
+            <li>瀏覽食物資料庫</li>
+          </ul>
+        </div>
+        <div class="role-card">
+          <h4>🛡️ 系統管理員（Admin）</h4>
+          <ul>
+            <li>擁有一般使用者全部權限</li>
+            <li>管理食物資料庫（新增/編輯/刪除/CSV 匯入）</li>
+            <li>查看所有使用者飲食紀錄</li>
+            <li>管理用戶帳號（啟用/停用）</li>
+            <li>發布系統公告</li>
+            <li>查看平台統計數據</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="s1-4">
+      <h3>1.4 系統範疇</h3>
+      <div class="info-box">
+        本系統為純前端應用，所有資料儲存於瀏覽器 localStorage，資料生命週期為 7 天（自動過期清除）。系統不包含後端 API、雲端同步或跨裝置資料共享功能。
+      </div>
+      <table>
+        <thead><tr><th>功能範疇</th><th>包含</th><th>不包含</th></tr></thead>
+        <tbody>
+          <tr><td>資料儲存</td><td>瀏覽器 localStorage</td><td>雲端資料庫、後端 API</td></tr>
+          <tr><td>身份驗證</td><td>前端 Email/密碼驗證</td><td>OAuth、SSO、多因素驗證</td></tr>
+          <tr><td>資料同步</td><td>同一瀏覽器內</td><td>跨裝置、跨瀏覽器同步</td></tr>
+          <tr><td>付款功能</td><td>（無）</td><td>不在範疇內</td></tr>
+          <tr><td>行動應用</td><td>響應式網頁（RWD）</td><td>原生 iOS/Android App</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════ 2. 功能性需求 ══════════ -->
+  <div class="chapter" id="s2">
+    <div class="chapter-header">
+      <div class="chapter-num">2</div>
+      <div class="chapter-title">
+        <h2>功能性需求</h2>
+        <p>系統各模組的詳細功能規格，標示優先等級</p>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;font-size:13px;color:var(--text-muted);">
+      優先等級說明：
+      <span class="badge badge-must">必要</span> 系統核心功能，版本一定須實作 ／
+      <span class="badge badge-should">建議</span> 重要功能，應盡量實作 ／
+      <span class="badge badge-could">選用</span> 增強功能，有餘力再實作
+    </div>
+
+    <!-- 2.1 身份驗證 -->
+    <div class="section" id="s2-1">
+      <h3>2.1 身份驗證模組</h3>
+      <ul class="req-list">
+        <li><span class="req-id">FR-A01</span><span>使用者可使用 Email 與密碼進行帳號註冊，系統需驗證 Email 格式正確性</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-A02</span><span>密碼需長度至少 6 字元，且包含大寫、小寫、數字、特殊符號中至少 3 種字元類型</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-A03</span><span>使用者暱稱長度須介於 1 至 30 字元之間</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-A04</span><span>同一 Email 不可重複註冊，系統應即時提示</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-A05</span><span>使用者可使用 Email 與密碼登入，系統以 bcrypt 雜湊比對密碼</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-A06</span><span>登入失敗累計 5 次後，帳號鎖定 15 分鐘，並顯示剩餘等待時間</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-A07</span><span>被管理員停用的帳號無法登入，系統顯示「帳號已停用，請聯繫管理員」</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-A08</span><span>使用者可登出，系統清除 Session 並導向登入頁面</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-A09</span><span>Session 以 localStorage 儲存，7 天後自動過期需重新登入</span><span class="badge badge-should" style="margin-left:auto;flex-shrink:0;">建議</span></li>
+      </ul>
+    </div>
+
+    <!-- 2.2 飲食紀錄 -->
+    <div class="section" id="s2-2">
+      <h3>2.2 飲食紀錄模組（Dashboard）</h3>
+      <ul class="req-list">
+        <li><span class="req-id">FR-R01</span><span>使用者可新增飲食紀錄，欄位包含：餐別（早/午/晚/點心）、食物名稱、份量、熱量、蛋白質、脂肪、碳水化合物、備註</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-R02</span><span>新增時支援食物名稱關鍵字自動補全，從食物資料庫模糊比對，顯示前 5 筆候選結果</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-R03</span><span>選取食物資料庫中的食物後，依輸入份量自動換算所有營養素數值</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-R04</span><span>支援手動輸入食物（不選食物資料庫），使用者自行填入各營養素數值</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-R05</span><span>使用者可編輯已存在的飲食紀錄，修改任意欄位後儲存</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-R06</span><span>使用者可刪除飲食紀錄，需顯示確認對話框</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-R07</span><span>系統依日期顯示飲食紀錄，預設顯示當天</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-R08</span><span>提供「前一天 / 今天 / 下一天」快速切換與日期選擇器，可查看任意日期紀錄</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-R09</span><span>每日摘要自動計算並顯示當日總熱量、蛋白質、脂肪、碳水化合物攝取量</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-R10</span><span>熱量以甜甜圈圖呈現已攝取 vs 剩餘目標，三大營養素以進度條呈現完成百分比</span><span class="badge badge-should" style="margin-left:auto;flex-shrink:0;">建議</span></li>
+      </ul>
+    </div>
+
+    <!-- 2.3 食物資料庫 -->
+    <div class="section" id="s2-3">
+      <h3>2.3 食物資料庫模組（Food Search）</h3>
+      <ul class="req-list">
+        <li><span class="req-id">FR-F01</span><span>使用者可瀏覽食物資料庫，每頁顯示 12 筆，提供分頁導覽</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-F02</span><span>支援以食物名稱關鍵字模糊搜尋</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-F03</span><span>支援依食物類別篩選（如：主食、蛋白質、蔬菜、飲品等）</span><span class="badge badge-should" style="margin-left:auto;flex-shrink:0;">建議</span></li>
+        <li><span class="req-id">FR-F04</span><span>支援依熱量範圍（最低/最高）篩選食物</span><span class="badge badge-could" style="margin-left:auto;flex-shrink:0;">選用</span></li>
+        <li><span class="req-id">FR-F05</span><span>每筆食物顯示：食物名稱、類別、每份熱量、蛋白質、脂肪、碳水化合物</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-F06</span><span>食物 ID 格式為 F001、F002… 依序遞增自動產生</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+      </ul>
+    </div>
+
+    <!-- 2.4 個人設定 -->
+    <div class="section" id="s2-4">
+      <h3>2.4 個人設定模組（Settings）</h3>
+      <ul class="req-list">
+        <li><span class="req-id">FR-P01</span><span>使用者可設定個人生理資料：性別、年齡、身高（cm）、體重（kg）</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-P02</span><span>使用者可設定活動量等級（久坐/輕度/中度/高度/非常高度）</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-P03</span><span>使用者可設定飲食目標（減重 ×0.8 / 維持 ×1.0 / 增重 ×1.15）</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-P04</span><span>系統依 Mifflin-St Jeor 公式計算 BMR，再乘以活動量與飲食目標係數，自動建議每日目標熱量</span><span class="badge badge-should" style="margin-left:auto;flex-shrink:0;">建議</span></li>
+        <li><span class="req-id">FR-P05</span><span>使用者可手動覆蓋目標熱量及三大營養素目標值</span><span class="badge badge-should" style="margin-left:auto;flex-shrink:0;">建議</span></li>
+        <li><span class="req-id">FR-P06</span><span>使用者可修改顯示暱稱</span><span class="badge badge-could" style="margin-left:auto;flex-shrink:0;">選用</span></li>
+      </ul>
+      <div class="card" style="margin-top:12px;">
+        <div class="card-title">BMR 計算公式</div>
+        <table>
+          <thead><tr><th>性別</th><th>公式（Mifflin-St Jeor）</th></tr></thead>
+          <tbody>
+            <tr><td>男性</td><td>88.362 + (13.397 × 體重) + (4.799 × 身高) − (5.677 × 年齡)</td></tr>
+            <tr><td>女性</td><td>447.593 + (9.247 × 體重) + (3.098 × 身高) − (4.330 × 年齡)</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:8px;">最終目標熱量 ＝ BMR × 活動量係數 × 飲食目標係數</p>
+      </div>
+    </div>
+
+    <!-- 2.5 趨勢報表 -->
+    <div class="section" id="s2-5">
+      <h3>2.5 趨勢報表模組（Report）</h3>
+      <ul class="req-list">
+        <li><span class="req-id">FR-T01</span><span>提供近 7 天及近 30 天兩種報表區間切換</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-T02</span><span>以折線圖/長條圖呈現每日熱量攝取趨勢，並標示目標熱量基準線</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-T03</span><span>以堆疊圖呈現每日三大營養素（蛋白質、脂肪、碳水化合物）分佈</span><span class="badge badge-should" style="margin-left:auto;flex-shrink:0;">建議</span></li>
+        <li><span class="req-id">FR-T04</span><span>顯示區間內平均每日熱量、達標天數統計</span><span class="badge badge-should" style="margin-left:auto;flex-shrink:0;">建議</span></li>
+        <li><span class="req-id">FR-T05</span><td>無紀錄的日期以 0 值顯示，不略過</td><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+      </ul>
+    </div>
+
+    <!-- 2.6 管理員後台 -->
+    <div class="section" id="s2-6">
+      <h3>2.6 管理員後台模組（Admin）</h3>
+      <ul class="req-list">
+        <li><span class="req-id">FR-AD01</span><span>管理員儀表板顯示：活躍用戶數、今日/本週紀錄總數、食物資料庫大小、本週 Top 10 最常使用食物（圖表）</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-AD02</span><span>食物管理：新增、編輯、刪除食物（刪除前檢查是否有紀錄引用，若有則拒絕）</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-AD03</span><span>食物管理：支援 CSV 批量匯入，格式為 foodName, category, servingSize, servingUnit, calories, protein, fat, carb，逐行驗證並回報成功/失敗筆數</span><span class="badge badge-should" style="margin-left:auto;flex-shrink:0;">建議</span></li>
+        <li><span class="req-id">FR-AD04</span><span>紀錄管理：可依日期範圍、用戶、餐別篩選，查看所有使用者飲食紀錄（含用戶名稱與 Email）</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-AD05</span><span>用戶管理：查看用戶列表、啟用/停用帳號，不可停用自己的帳號</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+        <li><span class="req-id">FR-AD06</span><span>公告管理：新增、編輯、刪除公告，設定標題、內容、有效日期範圍、啟用狀態</span><span class="badge badge-should" style="margin-left:auto;flex-shrink:0;">建議</span></li>
+      </ul>
+    </div>
+
+    <!-- 2.7 系統公告 -->
+    <div class="section" id="s2-7">
+      <h3>2.7 系統公告模組</h3>
+      <ul class="req-list">
+        <li><span class="req-id">FR-N01</span><span>啟用中且在有效日期範圍內的公告，在 Dashboard 頂部以橫幅顯示</span><span class="badge badge-should" style="margin-left:auto;flex-shrink:0;">建議</span></li>
+        <li><span class="req-id">FR-N02</span><span>使用者可點擊關閉按鈕隱藏當次 Session 的公告</span><span class="badge badge-should" style="margin-left:auto;flex-shrink:0;">建議</span></li>
+        <li><span class="req-id">FR-N03</span><span>超過有效日期或 isActive=false 的公告不顯示</span><span class="badge badge-must" style="margin-left:auto;flex-shrink:0;">必要</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════ 3. UI/UX ══════════ -->
+  <div class="chapter" id="s3">
+    <div class="chapter-header">
+      <div class="chapter-num">3</div>
+      <div class="chapter-title">
+        <h2>UI/UX 設計要求</h2>
+        <p>使用者介面、互動體驗、視覺化元件規範</p>
+      </div>
+    </div>
+
+    <div class="section" id="s3-1">
+      <h3>3.1 整體設計原則</h3>
+      <ul class="req-list">
+        <li><span class="req-id ui">UI-G01</span><span>採用 Bootstrap 5 作為 UI 框架，確保跨瀏覽器一致的視覺呈現</span></li>
+        <li><span class="req-id ui">UI-G02</span><span>支援響應式設計（RWD），頁面需在桌面（≥768px）與行動裝置（&lt;768px）皆可正常使用</span></li>
+        <li><span class="req-id ui">UI-G03</span><span>所有操作反饋（新增/修改/刪除/錯誤）以 Toast 通知呈現，自動於 3 秒後消失</span></li>
+        <li><span class="req-id ui">UI-G04</span><span>破壞性操作（刪除）必須顯示確認對話框（Bootstrap Modal），避免誤操作</span></li>
+        <li><span class="req-id ui">UI-G05</span><span>表單欄位需提供即時驗證提示，不合法的輸入應顯示紅色錯誤說明</span></li>
+      </ul>
+    </div>
+
+    <div class="section" id="s3-2">
+      <h3>3.2 版面配置</h3>
+      <table>
+        <thead><tr><th>裝置寬度</th><th>版面結構</th><th>導覽方式</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>桌面（≥992px）</td>
+            <td>左側固定 Sidebar + 右側主要內容區</td>
+            <td>左側 Sidebar 垂直導覽列</td>
+          </tr>
+          <tr>
+            <td>平板（768px–991px）</td>
+            <td>折疊式 Sidebar（可手動展開）+ 主內容區</td>
+            <td>Sidebar 收合按鈕 + 底部導覽列</td>
+          </tr>
+          <tr>
+            <td>手機（&lt;768px）</td>
+            <td>全寬主內容區，Sidebar 隱藏</td>
+            <td>固定底部導覽列（4個主要頁面）</td>
+          </tr>
+        </tbody>
+      </table>
+      <ul class="req-list" style="margin-top:8px;">
+        <li><span class="req-id ui">UI-L01</span><span>Header 顯示系統名稱 LOGO、當前用戶暱稱、通知圖示</span></li>
+        <li><span class="req-id ui">UI-L02</span><span>行動裝置底部導覽列固定顯示：首頁、食物搜尋、報表、設定</span></li>
+        <li><span class="req-id ui">UI-L03</span><span>管理員後台採用獨立版面，與一般用戶頁面有明顯視覺區分</span></li>
+      </ul>
+    </div>
+
+    <div class="section" id="s3-3">
+      <h3>3.3 互動設計</h3>
+      <ul class="req-list">
+        <li><span class="req-id ui">UI-I01</span><span>新增/編輯飲食紀錄透過 Bootstrap Modal 呈現，不跳頁</span></li>
+        <li><span class="req-id ui">UI-I02</span><span>食物名稱輸入框支援 debounce 自動補全下拉選單，選取後自動填入營養數值</span></li>
+        <li><span class="req-id ui">UI-I03</span><span>日期切換按鈕（← →）點擊後即時更新當日紀錄列表，無需重新整理</span></li>
+        <li><span class="req-id ui">UI-I04</span><span>食物搜尋頁面篩選條件變更時，自動重新篩選並更新分頁</span></li>
+        <li><span class="req-id ui">UI-I05</span><span>表單送出後，Modal 自動關閉並顯示成功 Toast</span></li>
+      </ul>
+    </div>
+
+    <div class="section" id="s3-4">
+      <h3>3.4 視覺化元件</h3>
+      <table>
+        <thead><tr><th>元件</th><th>使用位置</th><th>圖表類型</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td>每日熱量圖</td><td>Dashboard</td><td>甜甜圈圖（Doughnut）</td><td>中心顯示已攝取 kcal，分已達成/剩餘兩區</td></tr>
+          <tr><td>營養素進度條</td><td>Dashboard</td><td>Bootstrap Progress Bar</td><td>蛋白質/脂肪/碳水各一條，顯示 %</td></tr>
+          <tr><td>每日熱量趨勢</td><td>Report</td><td>折線圖（Line）</td><td>含目標熱量水平參考線</td></tr>
+          <tr><td>營養素分佈</td><td>Report</td><td>長條圖（Bar）</td><td>堆疊或分組呈現三大營養素</td></tr>
+          <tr><td>熱門食物排行</td><td>Admin Dashboard</td><td>水平長條圖</td><td>本週 Top 10 食物使用次數</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section" id="s3-5">
+      <h3>3.5 無障礙設計</h3>
+      <ul class="req-list">
+        <li><span class="req-id ui">UI-A01</span><span>互動元素（按鈕、輸入框、連結）需加上語意化 aria-label 屬性</span></li>
+        <li><span class="req-id ui">UI-A02</span><span>Toast 通知區域加上 aria-live="polite"，確保螢幕閱讀器可讀取</span></li>
+        <li><span class="req-id ui">UI-A03</span><span>使用語意化 HTML 標籤（&lt;main&gt;、&lt;nav&gt;、&lt;header&gt;、&lt;section&gt;）</span></li>
+        <li><span class="req-id ui">UI-A04</span><span>支援鍵盤導覽（Tab 鍵）操作所有互動元件</span></li>
+        <li><span class="req-id ui">UI-A05</span><span>圖示搭配文字說明，不單獨依賴顏色傳遞資訊</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════ 4. 技術規格 ══════════ -->
+  <div class="chapter" id="s4">
+    <div class="chapter-header">
+      <div class="chapter-num">4</div>
+      <div class="chapter-title">
+        <h2>技術規格要求</h2>
+        <p>技術堆疊、資料儲存格式、元件架構與效能</p>
+      </div>
+    </div>
+
+    <div class="section" id="s4-1">
+      <h3>4.1 技術堆疊</h3>
+      <div class="tech-grid">
+        <div class="tech-card">
+          <div class="name">React</div>
+          <div class="ver">^18.3.1</div>
+          <div class="desc">核心 UI 框架，採用 Function Component + Hooks</div>
+        </div>
+        <div class="tech-card">
+          <div class="name">Vite</div>
+          <div class="ver">^5.4.8</div>
+          <div class="desc">開發伺服器與生產建置工具，支援 HMR</div>
+        </div>
+        <div class="tech-card">
+          <div class="name">React Router DOM</div>
+          <div class="ver">^6.26.0</div>
+          <div class="desc">客戶端路由，使用 HashRouter（不需後端設定）</div>
+        </div>
+        <div class="tech-card">
+          <div class="name">Bootstrap</div>
+          <div class="ver">^5.3.3</div>
+          <div class="desc">CSS 框架，提供 Grid、Modal、Toast、Form 元件</div>
+        </div>
+        <div class="tech-card">
+          <div class="name">Bootstrap Icons</div>
+          <div class="ver">^1.11.3</div>
+          <div class="desc">圖示庫，用於所有 UI 圖示</div>
+        </div>
+        <div class="tech-card">
+          <div class="name">Chart.js + react-chartjs-2</div>
+          <div class="ver">^4.4.4 / ^5.2.0</div>
+          <div class="desc">圖表視覺化，甜甜圈圖、折線圖、長條圖</div>
+        </div>
+        <div class="tech-card">
+          <div class="name">bcryptjs</div>
+          <div class="ver">^2.4.3</div>
+          <div class="desc">密碼雜湊加密，salt rounds 12（註冊）</div>
+        </div>
+        <div class="tech-card">
+          <div class="name">SASS</div>
+          <div class="ver">^1.99.0</div>
+          <div class="desc">CSS 預處理器，用於自訂樣式覆蓋</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="s4-2">
+      <h3>4.2 資料儲存規格</h3>
+      <div class="info-box">
+        所有資料以 JSON 格式儲存於瀏覽器 localStorage，每筆資料封裝為 <code>{ data, expiredAt }</code> 格式，<strong>統一 7 天後自動過期</strong>。
+      </div>
+      <table>
+        <thead><tr><th>localStorage 鍵名</th><th>資料類型</th><th>說明</th><th>範圍</th></tr></thead>
+        <tbody>
+          <tr><td><code>ddas_users</code></td><td>Array&lt;User&gt;</td><td>所有用戶帳號資料（含密碼雜湊）</td><td>全域共用</td></tr>
+          <tr><td><code>ddas_session</code></td><td>Object</td><td>當前登入 Session（userId, role, displayName）</td><td>全域共用</td></tr>
+          <tr><td><code>ddas_records_{userId}</code></td><td>Array&lt;Record&gt;</td><td>個別用戶飲食紀錄</td><td>每位用戶獨立</td></tr>
+          <tr><td><code>ddas_foods</code></td><td>Array&lt;Food&gt;</td><td>食物資料庫（所有用戶共用）</td><td>全域共用</td></tr>
+          <tr><td><code>ddas_profile_{userId}</code></td><td>Object</td><td>個人身體數據與目標設定快取</td><td>每位用戶獨立</td></tr>
+          <tr><td><code>ddas_announcements</code></td><td>Array&lt;Ann&gt;</td><td>系統公告列表</td><td>全域共用</td></tr>
+          <tr><td><code>ddas_login_attempts_{email}</code></td><td>Object</td><td>登入失敗次數與鎖定時間</td><td>每個 Email 獨立</td></tr>
+        </tbody>
+      </table>
+
+      <h4>飲食紀錄（Record）欄位規格</h4>
+      <table>
+        <thead><tr><th>欄位</th><th>型別</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td>recordId</td><td>string (UUID)</td><td>紀錄唯一識別碼，格式 xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx</td></tr>
+          <tr><td>userId</td><td>string (UUID)</td><td>所屬使用者 ID</td></tr>
+          <tr><td>mealType</td><td>'breakfast' | 'lunch' | 'dinner' | 'snack'</td><td>餐別</td></tr>
+          <tr><td>recordDate</td><td>string (YYYY-MM-DD)</td><td>紀錄日期，使用本地時區</td></tr>
+          <tr><td>foodName</td><td>string</td><td>食物名稱（經 sanitizeInput 過濾）</td></tr>
+          <tr><td>foodId</td><td>string | null</td><td>關聯食物資料庫 ID（手動輸入時為 null）</td></tr>
+          <tr><td>servingAmount</td><td>number</td><td>份量</td></tr>
+          <tr><td>calories</td><td>number (整數)</td><td>熱量（kcal），四捨五入至整數</td></tr>
+          <tr><td>protein / fat / carbohydrate</td><td>number (1位小數)</td><td>三大營養素（克），保留 1 位小數</td></tr>
+          <tr><td>note</td><td>string</td><td>備註（可為空）</td></tr>
+          <tr><td>createdAt / updatedAt</td><td>string (ISO 8601)</td><td>建立/更新時間戳記</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section" id="s4-3">
+      <h3>4.3 元件架構規格</h3>
+      <table>
+        <thead><tr><th>規範項目</th><th>要求</th></tr></thead>
+        <tbody>
+          <tr><td>元件類型</td><td>全程使用 Function Component，禁止使用 Class Component</td></tr>
+          <tr><td>狀態管理</td><td>全域狀態僅使用 React Context API（AuthContext、ToastContext），不引入 Redux/Zustand</td></tr>
+          <tr><td>路由系統</td><td>使用 HashRouter，路由守衛以 wrapper component 實作（RequireAuth / RequireAdmin / GuestOnly）</td></tr>
+          <tr><td>資料存取</td><td>頁面元件不直接操作 localStorage，統一透過 Service 模組（recordService / foodService…）進行</td></tr>
+          <tr><td>路由別名</td><td>使用 @/ 別名對應 src/ 目錄，避免深層相對路徑</td></tr>
+          <tr><td>模組化</td><td>Service 模組與 Utility 函式集中於 src/assets/api/，各模組功能單一</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section" id="s4-4">
+      <h3>4.4 效能要求</h3>
+      <ul class="req-list">
+        <li><span class="req-id tech">TK-P01</span><span>食物搜尋分頁每頁固定 12 筆，避免一次渲染大量 DOM 節點</span></li>
+        <li><span class="req-id tech">TK-P02</span><span>自動補全搜尋最多回傳 5 筆，限制下拉選單高度</span></li>
+        <li><span class="req-id tech">TK-P03</span><span>Chart.js 元件在 Dashboard 掛載時一次性初始化，切換日期僅更新資料集，不重建圖表</span></li>
+        <li><span class="req-id tech">TK-P04</span><span>頁面初始載入（First Contentful Paint）目標在現代瀏覽器中 &lt; 2 秒</span></li>
+        <li><span class="req-id tech">TK-P05</span><span>使用 Vite 建置，生產版本需啟用 Tree Shaking 與 Code Splitting</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════ 5. 資安要求 ══════════ -->
+  <div class="chapter" id="s5">
+    <div class="chapter-header">
+      <div class="chapter-num">5</div>
+      <div class="chapter-title">
+        <h2>資安要求</h2>
+        <p>密碼安全、存取控制、輸入驗證、資料保護</p>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      本系統為純前端教學專題，資安措施以前端可實作的範圍為主。正式生產環境應搭配後端 API 與 HTTPS，以獲得完整安全保障。
+    </div>
+
+    <div class="section" id="s5-1">
+      <h3>5.1 密碼安全</h3>
+      <ul class="req-list">
+        <li><span class="req-id sec">SEC-P01</span><span>密碼絕對不得以明文儲存，必須使用 bcryptjs 進行單向雜湊，salt rounds 設定為 12</span></li>
+        <li><span class="req-id sec">SEC-P02</span><span>密碼長度下限 6 字元，且需包含大寫字母、小寫字母、數字、特殊符號中至少 3 種</span></li>
+        <li><span class="req-id sec">SEC-P03</span><span>Session 物件（ddas_session）僅儲存 userId、displayName、email、role，不含密碼雜湊</span></li>
+        <li><span class="req-id sec">SEC-P04</span><span>登入時使用 bcrypt.compare() 比對，不以字串直接比較密碼</span></li>
+      </ul>
+    </div>
+
+    <div class="section" id="s5-2">
+      <h3>5.2 存取控制</h3>
+      <ul class="req-list">
+        <li><span class="req-id sec">SEC-AC01</span><span>未登入用戶存取受保護路由時，系統自動導向 /login</span></li>
+        <li><span class="req-id sec">SEC-AC02</span><span>一般用戶存取 /admin/* 路由時，系統自動導向 /dashboard</span></li>
+        <li><span class="req-id sec">SEC-AC03</span><span>已登入用戶存取 /login 或 /register 時，系統自動導向 /dashboard（防止重複登入）</span></li>
+        <li><span class="req-id sec">SEC-AC04</span><span>飲食紀錄 Service 層以 userId 為範疇隔離資料，不允許跨用戶存取他人紀錄</span></li>
+        <li><span class="req-id sec">SEC-AC05</span><span>管理員停用帳號後，該帳號下次嘗試登入時立即拒絕，不等 Session 過期</span></li>
+        <li><span class="req-id sec">SEC-AC06</span><span>管理員不可停用自己的帳號，避免產生無法管理的系統狀態</span></li>
+      </ul>
+    </div>
+
+    <div class="section" id="s5-3">
+      <h3>5.3 輸入驗證與 XSS 防護</h3>
+      <ul class="req-list">
+        <li><span class="req-id sec">SEC-I01</span><span>所有使用者輸入的文字欄位（食物名稱、備註、暱稱）在儲存前需通過 sanitizeInput() 過濾，移除所有 HTML 標籤（防止 XSS 攻擊）</span></li>
+        <li><span class="req-id sec">SEC-I02</span><span>Email 格式需符合正則表達式 /^[^\s@]+@[^\s@]+\.[^\s@]+$/ 才予以接受</span></li>
+        <li><span class="req-id sec">SEC-I03</span><span>數值型欄位（熱量、蛋白質、份量等）需確保為 Number 型別，避免字串注入</span></li>
+        <li><span class="req-id sec">SEC-I04</span><span>CSV 匯入時逐行驗證必要欄位，缺少欄位的資料列不匯入並回報錯誤</span></li>
+        <li><span class="req-id sec">SEC-I05</span><span>食物名稱不可為空字串，後端需驗證至少 1 字元</span></li>
+      </ul>
+    </div>
+
+    <div class="section" id="s5-4">
+      <h3>5.4 資料保護</h3>
+      <ul class="req-list">
+        <li><span class="req-id sec">SEC-D01</span><span>所有 localStorage 資料設定 7 天過期時間，到期後自動清除，避免無限期資料累積</span></li>
+        <li><span class="req-id sec">SEC-D02</span><span>登出操作需完整清除 ddas_session，不允許 Session 殘留</span></li>
+        <li><span class="req-id sec">SEC-D03</span><span>登入失敗次數紀錄（ddas_login_attempts_*）於成功登入後立即清除</span></li>
+        <li><span class="req-id sec">SEC-D04</span><span>刪除用戶相關資料時，需同步清除 ddas_records_{userId} 與 ddas_profile_{userId}，避免孤兒資料</span></li>
+        <li><span class="req-id sec">SEC-D05</span><span>食物資料庫有飲食紀錄引用時，禁止刪除該食物，以維護資料完整性</span></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Daily Diet Accounting System — 系統需求規格書 v2.0.0 ｜ 淡江大學 JavaScript 網頁設計 ｜ 2026-05-14
+</footer>
+
+</body>
+</html>
