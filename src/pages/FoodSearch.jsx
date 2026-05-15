@@ -13,6 +13,7 @@ export default function FoodSearch() {
   const { showToast } = useToast()
 
   const [keyword, setKeyword] = useState('')
+  const [debouncedKeyword, setDebouncedKeyword] = useState('')
   const [category, setCategory] = useState('全部')
   const [calMin, setCalMin] = useState(0)
   const [calMax, setCalMax] = useState(1000)
@@ -24,31 +25,30 @@ export default function FoodSearch() {
 
   const modalRef = useRef(null)
   const bsModal = useRef(null)
-  const searchTimer = useRef(null)
 
   useEffect(() => {
     bsModal.current = new Modal(modalRef.current)
   }, [])
 
   useEffect(() => {
-    loadFoods()
-  }, [category, calMin, calMax, page])
+    const timer = setTimeout(() => setDebouncedKeyword(keyword), 300)
+    return () => clearTimeout(timer)
+  }, [keyword])
 
-  const loadFoods = () => {
-    setResult(getFoods({ keyword, category, minCal: Math.min(calMin, calMax), maxCal: Math.max(calMin, calMax), page, limit: 12 }))
-  }
+  useEffect(() => {
+    let food = getFoods({ keyword: debouncedKeyword, category, minCal: Math.min(calMin, calMax), maxCal: Math.max(calMin, calMax), page, limit: 12 })
+    setResult(food)
+  }, [debouncedKeyword, category, calMin, calMax, page])
 
   const handleKeyword = (e) => {
     setKeyword(e.target.value)
-    clearTimeout(searchTimer.current)
-    searchTimer.current = setTimeout(() => { setPage(1); loadFoods() }, 300)
+    setPage(1)
   }
 
   const handleRangeChange = (field, val) => {
     if (field === 'min') setCalMin(val)
     else setCalMax(val)
-    clearTimeout(searchTimer.current)
-    searchTimer.current = setTimeout(() => { setPage(1); loadFoods() }, 200)
+    setPage(1)
   }
 
   const openAddModal = (food) => {

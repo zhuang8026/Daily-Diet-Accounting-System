@@ -24,7 +24,6 @@ export default function Header({ session }) {
       <div className="d-flex align-items-center gap-3">
         {session.role === 'admin' && <span className="badge text-bg-warning">Administrator</span>}
         {session.role === 'user' && <span className="badge text-bg-info">User</span>}
-        {/* <span className="text-white-50 small d-none d-sm-inline">{session.displayName}</span> */}
         <button className="btn btn-sm btn-outline-light" onClick={handleLogout} aria-label="登出">
           <i className="bi bi-box-arrow-right me-1"></i>
           <span className="d-none d-sm-inline">登出</span>

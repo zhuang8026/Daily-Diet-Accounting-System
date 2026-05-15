@@ -11,7 +11,8 @@ const ADMIN_NAV = [
   { path: '/admin', icon: 'bi-speedometer2', label: '統計' },
   { path: '/admin/foods', icon: 'bi-database-fill', label: '食物' },
   { path: '/admin/records', icon: 'bi-journal-text', label: '紀錄' },
-  { path: '/admin/users', icon: 'bi-people-fill', label: '使用者' }
+  { path: '/admin/users', icon: 'bi-people-fill', label: '使用者' },
+  { path: '/admin/announcements', icon: 'bi-megaphone-fill', label: '公告' }
 ]
 
 export default function BottomNav({ session }) {
@@ -19,7 +20,7 @@ export default function BottomNav({ session }) {
   if (!session) return null
 
   const navItems = session.role === 'admin' ? ADMIN_NAV : USER_NAV
-  const currentPath = location.hash.replace('#', '') || '/'
+  const currentPath = location.pathname
 
   return (
     <>

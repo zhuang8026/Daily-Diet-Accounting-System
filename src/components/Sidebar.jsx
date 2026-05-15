@@ -25,7 +25,6 @@ export default function Sidebar({ session }) {
   return (
     <>
       <div className="sidebar-brand p-3 border-bottom">
-        {/* <i className="bi bi-clipboard2-heart-fill text-success me-2"></i> */}
         <span className="fw-bold small">{session.role === 'admin' ? '後台管理' : '飲食記帳'}</span>
       </div>
       <ul className="nav flex-column p-2" role="list">

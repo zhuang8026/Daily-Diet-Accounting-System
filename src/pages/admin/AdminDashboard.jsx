@@ -155,8 +155,8 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {stats.todayUsers.map((u, i) => (
-                    <tr key={i}>
+                  {stats.todayUsers.map((u) => (
+                    <tr key={u.email}>
                       <th scope="row">{u.displayName}</th>
                       <td>{u.email}</td>
                       <td>{u.count}</td>

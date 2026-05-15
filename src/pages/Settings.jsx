@@ -46,18 +46,6 @@ export default function Settings() {
   }, [session.userId])
 
   useEffect(() => {
-    calcBMR()
-  }, [form.gender, form.age, form.heightCm, form.weightKg, form.activityLevel, form.dietGoal])
-
-  const set = (field) => (e) => setForm(f => ({ ...f, [field]: e.target.value }))
-
-  const setAndSave = (field) => (e) => {
-    const value = e.target.value
-    setForm(f => ({ ...f, [field]: value }))
-    updateProfile(session.userId, { [field]: value })
-  }
-
-  const calcBMR = () => {
     const age = parseInt(form.age, 10)
     const h = parseFloat(form.heightCm)
     const w = parseFloat(form.weightKg)
@@ -66,7 +54,9 @@ export default function Settings() {
     } else {
       setSuggestedCal(null)
     }
-  }
+  }, [form.gender, form.age, form.heightCm, form.weightKg, form.activityLevel, form.dietGoal])
+
+  const set = (field) => (e) => setForm(f => ({ ...f, [field]: e.target.value }))
 
   const applySuggested = () => {
     if (suggestedCal) {
@@ -167,7 +157,7 @@ export default function Settings() {
               {GOAL_OPTIONS.map(({ value, label }) => (
                 <div className="col-12 col-sm-4" key={value}>
                   <div className={`form-check border rounded p-3 h-100 ${form.dietGoal === value ? 'border-success' : ''}`}>
-                    <input className="form-check-input" type="radio" name="dietGoal" id={`goal-${value}`} value={value} checked={form.dietGoal === value} onChange={setAndSave('dietGoal')} />
+                    <input className="form-check-input" type="radio" name="dietGoal" id={`goal-${value}`} value={value} checked={form.dietGoal === value} onChange={set('dietGoal')} />
                     <label className="form-check-label fw-500" htmlFor={`goal-${value}`}>{label}</label>
                   </div>
                 </div>
