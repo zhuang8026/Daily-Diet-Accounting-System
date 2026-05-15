@@ -2,7 +2,7 @@ import ctypes
 import pathlib
 from typing import List, Dict
 
-_lib_path = pathlib.Path(__file__).parent.parent / "c_logger" / "liblogger.so"
+_lib_path = pathlib.Path(__file__).parent.parent / "core" / "liblogger.so"
 
 try:
     _lib = ctypes.CDLL(str(_lib_path))
