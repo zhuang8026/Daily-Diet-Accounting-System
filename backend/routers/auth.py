@@ -95,7 +95,7 @@ def login(body: LoginRequest):
         email=user["email"],
         role=user["role"],
     )
-    # write_log(email_lower, "AUTH_LOGIN", f"{user['displayName']} 登入成功")
+    write_log(email_lower, "AUTH_LOGIN", f"{user['displayName']} 登入成功")
     return TokenResponse(access_token=token, user=session_user)
 
 
