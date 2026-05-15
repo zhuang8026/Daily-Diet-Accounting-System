@@ -1,0 +1,657 @@
+================================================================
+  每日飲食記帳系統 (DDAS) — 後端 API 需求規格書
+  Daily Diet Accounting System — Backend API Specification
+  版本：1.0.0　　撰寫日期：2026-05-15
+================================================================
+
+目錄
+----
+1. 系統概覽
+2. 技術規格
+3. 專案結構
+4. 資料模型
+5. 認證機制
+6. 共用規則
+7. API 端點規格
+   7.1  健康檢查
+   7.2  認證 /auth
+   7.3  食物 /foods
+   7.4  飲食紀錄 /records
+   7.5  個人設定 /profile
+   7.6  公告 /announcements
+   7.7  後台管理 /admin
+8. 錯誤代碼對照
+9. 啟動方式
+
+
+================================================================
+1. 系統概覽
+================================================================
+
+本後端為「每日飲食記帳系統」的 RESTful API 服務，取代原本純前端
+localStorage 資料層，提供：
+
+  - JWT 身份驗證（登入 / 註冊 / 帳號鎖定）
+  - 食物資料庫 CRUD（含 CSV 批次匯入）
+  - 使用者個人飲食紀錄 CRUD
+  - 個人目標設定（身高、體重、活動量、熱量目標）
+  - 系統公告管理
+  - 管理員後台（統計儀表板、使用者管理、全紀錄查詢）
+
+目前資料層為 In-Memory（程式重啟後回到 mock 初始狀態），
+架構設計允許後續替換為 SQLite / PostgreSQL。
+
+
+================================================================
+2. 技術規格
+================================================================
+
+  語言與框架：Python 3.11+、FastAPI 0.115.0
+  伺服器：     uvicorn[standard] 0.30.6
+  認證：       JWT（python-jose[cryptography] 3.3.0）
+  密碼雜湊：   bcrypt（passlib[bcrypt] 1.7.4）
+  資料驗證：   Pydantic v2（FastAPI 內建）
+  CORS：       允許 http://localhost:5173、http://localhost:4173
+  API 文件：   Swagger UI → http://localhost:8000/docs
+  連接埠：     8000（預設）
+
+
+================================================================
+3. 專案結構
+================================================================
+
+backend/
+├── main.py              # FastAPI app 入口，CORS 設定，掛載所有 Router
+├── config.py            # JWT 密鑰、演算法、過期時間、CORS 來源
+├── schemas.py           # 所有 Pydantic 資料模型（Request / Response）
+├── auth_utils.py        # 密碼 hash/verify、JWT 簽發/驗證工具函式
+├── store.py             # In-Memory 資料庫（全域單例，含初始 mock 資料）
+├── dependencies.py      # FastAPI 依賴注入：get_current_user、require_admin
+├── requirements.txt     # Python 依賴清單
+├── mock/
+│   ├── users.py         # 預設 Demo 帳號（2 筆）
+│   ├── foods.py         # 預設食物資料（10 筆）
+│   └── records.py       # Demo 使用者飲食紀錄（從 demoRecords.json 載入）
+└── routers/
+    ├── auth.py          # POST /auth/login、/auth/register、GET /auth/me
+    ├── foods.py         # GET/POST/PUT/DELETE /foods
+    ├── records.py       # GET/POST/PUT/DELETE /records
+    ├── profile.py       # GET/PUT /profile
+    ├── announcements.py # GET/POST/PUT/DELETE /announcements
+    └── admin.py         # GET /admin/stats、使用者管理、全紀錄查詢
+
+
+================================================================
+4. 資料模型
+================================================================
+
+4.1 使用者（User）
+------------------
+  userId         string     UUID，使用者唯一識別碼
+  displayName    string     暱稱（1–30 字）
+  email          string     Email（唯一、小寫儲存）
+  passwordHash   string     bcrypt 雜湊（不對外輸出）
+  gender         string?    'male' | 'female'
+  age            int?       年齡（10–120）
+  heightCm       float?     身高（50–250 cm）
+  weightKg       float?     體重（20–300 kg）
+  activityLevel  string     'sedentary'|'light'|'moderate'|'active'|'veryActive'
+  dietGoal       string     'lose' | 'maintain' | 'gain'
+  targetCalories int        每日熱量目標（kcal）
+  targetProtein  float      每日蛋白質目標（g）
+  targetFat      float      每日脂肪目標（g）
+  targetCarb     float      每日碳水目標（g）
+  role           string     'user' | 'admin'
+  isActive       bool       帳號是否啟用
+  createdAt      string     ISO 8601 時間戳
+  updatedAt      string     ISO 8601 時間戳
+  lastLoginAt    string?    最後登入時間
+
+4.2 食物（Food）
+-----------------
+  foodId              string   系統自動產生（F001 格式）
+  foodName            string   食物名稱
+  category            string   主食|蔬菜|水果|肉類|蛋類|乳製品|飲料|零食|其他
+  servingSize         float    每份份量數值
+  servingUnit         string   份量單位（例：克（1 份））
+  caloriesPerServing  int      每份熱量（kcal）
+  proteinPerServing   float    每份蛋白質（g，小數點後 1 位）
+  fatPerServing       float    每份脂肪（g，小數點後 1 位）
+  carbPerServing      float    每份碳水化合物（g，小數點後 1 位）
+  isCustom            bool     是否為自訂食物
+  createdBy           string   建立者 userId
+  createdAt           string   ISO 8601 時間戳
+  updatedAt           string   ISO 8601 時間戳
+
+4.3 飲食紀錄（Record）
+-----------------------
+  recordId      string   UUID
+  userId        string   所屬使用者 UUID
+  mealType      string   'breakfast' | 'lunch' | 'dinner' | 'snack'
+  recordDate    string   YYYY-MM-DD
+  foodName      string   食物名稱
+  foodId        string?  關聯食物 foodId（手動輸入時為 null）
+  servingAmount float    份數（倍數，例 1.5）
+  calories      int      本筆熱量（kcal）
+  protein       float    本筆蛋白質（g）
+  fat           float    本筆脂肪（g）
+  carbohydrate  float    本筆碳水化合物（g）
+  note          string   備註（最多 200 字，可空白）
+  createdAt     string   ISO 8601 時間戳
+  updatedAt     string   ISO 8601 時間戳
+
+4.4 公告（Announcement）
+-------------------------
+  id         string   UUID
+  title      string   標題（最多 50 字）
+  content    string   內容（最多 500 字）
+  startDate  string   生效起日（YYYY-MM-DD）
+  endDate    string   生效迄日（YYYY-MM-DD）
+  isActive   bool     是否啟用
+  createdAt  string   ISO 8601 時間戳
+  updatedAt  string   ISO 8601 時間戳
+
+
+================================================================
+5. 認證機制
+================================================================
+
+採用 JWT Bearer Token，無 Refresh Token（Token 有效期 24 小時）。
+
+登入流程：
+  1. POST /auth/login → 驗證 email / password
+  2. 成功 → 簽發 JWT，payload 包含 {userId, email, role, exp}
+  3. 前端將 token 存入 localStorage（key: ddas_token）
+  4. 後續每個請求在 Header 帶上：
+       Authorization: Bearer <token>
+  5. FastAPI dependencies.py 的 get_current_user() 解碼驗證
+
+登入失敗保護：
+  - 同一 email 累計失敗 5 次 → 鎖定 15 分鐘
+  - 鎖定期間回應 HTTP 401，detail 包含 {locked: true, message: "..."}
+  - 鎖定到期後自動解除
+
+權限等級：
+  - 公開（無需 Token）：POST /auth/login、POST /auth/register
+  - 一般使用者（需登入）：/foods、/records、/profile、/announcements/active
+  - 管理員（role=admin）：POST/PUT/DELETE /foods、/announcements、/admin/*
+
+
+================================================================
+6. 共用規則
+================================================================
+
+請求格式：
+  Content-Type: application/json
+
+時間格式：
+  所有時間欄位使用 ISO 8601（UTC）：2026-05-15T12:00:00.000000+00:00
+
+數值精度：
+  - 熱量（calories）：整數（四捨五入）
+  - 蛋白質、脂肪、碳水：小數點後 1 位
+
+分頁參數（適用 GET /foods）：
+  - page：頁碼，從 1 開始，預設 1
+  - limit：每頁筆數，預設 12
+
+分頁回應結構：
+  {
+    "items": [...],
+    "total": 42,
+    "page": 1,
+    "totalPages": 4
+  }
+
+In-Memory 特性說明：
+  - 伺服器重啟後，所有使用者新增的資料（註冊、飲食紀錄等）將重置
+  - Mock 初始資料（2 個帳號、10 筆食物、Demo 紀錄）每次啟動時載入
+
+
+================================================================
+7. API 端點規格
+================================================================
+
+----------------------------------------------------------------
+7.1 健康檢查
+----------------------------------------------------------------
+
+GET /
+  說明：確認 API 服務正常運作
+  權限：公開
+  回應 200：
+    { "status": "ok", "message": "DDAS API is running" }
+
+
+----------------------------------------------------------------
+7.2 認證 /auth
+----------------------------------------------------------------
+
+POST /auth/login
+  說明：使用者登入，成功回傳 JWT Token
+  權限：公開
+  Request Body：
+    {
+      "email":    "demo@demo.com",   // string，必填
+      "password": "Demo@123"         // string，必填
+    }
+  回應 200（成功）：
+    {
+      "access_token": "eyJhbGci...",
+      "token_type": "bearer",
+      "user": {
+        "userId":      "user-demo-001",
+        "displayName": "Demo 使用者",
+        "email":       "demo@demo.com",
+        "role":        "user"
+      }
+    }
+  回應 401（密碼錯誤）：
+    { "detail": "帳號或密碼錯誤" }
+  回應 401（帳號鎖定）：
+    { "detail": { "locked": true, "message": "帳號已鎖定，請於 15 分鐘後再試" } }
+
+POST /auth/register
+  說明：新使用者註冊
+  權限：公開
+  Request Body：
+    {
+      "email":       "user@example.com", // string，必填，唯一
+      "password":    "Pass@123",          // string，必填，強度驗證
+      "displayName": "新使用者"           // string，必填，1–30 字
+    }
+  密碼強度規則：長度 ≥ 6，且包含大寫、小寫、數字、特殊符號中至少 3 種
+  回應 200（成功）：
+    { "success": true, "message": "註冊成功，請登入" }
+  回應 400（Email 已存在）：
+    { "detail": "此 Email 已被使用" }
+  回應 400（密碼強度不足）：
+    { "detail": "密碼強度不足..." }
+
+GET /auth/me
+  說明：取得目前登入者資訊
+  權限：需登入
+  Header：Authorization: Bearer <token>
+  回應 200：
+    { "userId": "...", "displayName": "...", "email": "...", "role": "user" }
+  回應 401：Token 無效或已過期
+
+
+----------------------------------------------------------------
+7.3 食物 /foods
+----------------------------------------------------------------
+
+GET /foods
+  說明：分頁查詢食物清單，支援多條件篩選
+  權限：需登入
+  Query Params：
+    keyword   string  關鍵字（模糊比對 foodName），預設空字串
+    category  string  類別篩選，'全部' 或空值表示不篩選，預設空字串
+    min_cal   int     最低熱量，預設 0
+    max_cal   int     最高熱量，預設 9999
+    page      int     頁碼，預設 1
+    limit     int     每頁筆數，預設 12
+  回應 200：FoodListResponse（分頁結構）
+
+GET /foods/search
+  說明：關鍵字自動補全，最多回傳 5 筆（用於 Dashboard 搜尋下拉）
+  權限：需登入
+  Query Params：
+    keyword  string  搜尋關鍵字（空字串回傳空陣列）
+  回應 200：List[Food]（最多 5 筆）
+
+GET /foods/{food_id}
+  說明：取得單筆食物資料
+  權限：需登入
+  回應 200：Food
+  回應 404：{ "detail": "食物不存在" }
+
+POST /foods
+  說明：新增食物（foodId 由後端自動產生）
+  權限：管理員
+  Request Body：FoodCreate
+    {
+      "foodName":           "燕麥片",
+      "category":           "主食",
+      "servingSize":        50,
+      "servingUnit":        "克（1 份）",
+      "caloriesPerServing": 190,
+      "proteinPerServing":  6.5,
+      "fatPerServing":      3.5,
+      "carbPerServing":     32.0,
+      "isCustom":           false
+    }
+  回應 200：Food（含後端產生的 foodId）
+
+PUT /foods/{food_id}
+  說明：修改食物資料
+  權限：管理員
+  Request Body：FoodUpdate（所有欄位選填）
+  回應 200：Food（更新後）
+  回應 404：{ "detail": "食物不存在" }
+
+DELETE /foods/{food_id}
+  說明：刪除食物（若有紀錄引用則拒絕）
+  權限：管理員
+  回應 200：{ "success": true, "message": "食物已刪除" }
+  回應 400：{ "detail": "此食物已被使用者飲食紀錄引用，無法刪除" }
+  回應 404：{ "detail": "食物不存在" }
+
+POST /foods/import-csv
+  說明：CSV 批次匯入食物
+  權限：管理員
+  Request Body：
+    { "csvText": "foodName,category,...\n燕麥片,主食,..." }
+  CSV 欄位順序（含標題行）：
+    foodName, category, servingSize, servingUnit,
+    caloriesPerServing, proteinPerServing, fatPerServing, carbPerServing
+  回應 200：
+    { "success": 5, "failed": 1, "errors": ["第 3 行：缺少必要欄位"] }
+
+
+----------------------------------------------------------------
+7.4 飲食紀錄 /records
+----------------------------------------------------------------
+
+GET /records
+  說明：取得目前登入使用者的飲食紀錄
+  權限：需登入
+  Query Params：
+    date       string  YYYY-MM-DD，不填回傳全部紀錄
+    meal_type  string  'breakfast'|'lunch'|'dinner'|'snack'，不填回傳全部
+  回應 200：List[Record]
+
+GET /records/summary/daily
+  說明：取得指定日期的熱量與三大營養素合計
+  權限：需登入
+  Query Params：
+    date  string  YYYY-MM-DD（必填）
+  回應 200：
+    {
+      "totalCalories": 1850,
+      "totalProtein":  95.3,
+      "totalFat":      62.1,
+      "totalCarb":     215.8
+    }
+
+GET /records/summary/range
+  說明：取得日期區間內每日合計（用於趨勢報表）
+  權限：需登入
+  Query Params：
+    start_date  string  YYYY-MM-DD（必填）
+    end_date    string  YYYY-MM-DD（必填）
+  回應 200：List[RangeSummaryItem]
+    [
+      {
+        "date":           "2026-05-09",
+        "totalCalories":  2100,
+        "totalProtein":   110.0,
+        "totalFat":       70.0,
+        "totalCarb":      250.0,
+        "hasData":        true
+      },
+      ...
+    ]
+  說明：區間內每天都會有一筆資料，無紀錄日 hasData=false、各值為 0
+
+POST /records
+  說明：新增一筆飲食紀錄（recordId 由後端自動產生）
+  權限：需登入
+  Request Body：RecordCreate
+    {
+      "mealType":      "lunch",
+      "recordDate":    "2026-05-15",
+      "foodName":      "雞胸肉（水煮）",
+      "foodId":        "F002",      // 可為 null（手動輸入時）
+      "servingAmount": 1.5,
+      "calories":      248,
+      "protein":       46.5,
+      "fat":           5.4,
+      "carbohydrate":  0.0,
+      "note":          ""
+    }
+  回應 200：Record（完整物件，含 recordId）
+
+PUT /records/{record_id}
+  說明：修改飲食紀錄（只能修改自己的紀錄）
+  權限：需登入
+  Request Body：RecordUpdate（所有欄位選填）
+  回應 200：Record（更新後）
+  回應 403：{ "detail": "無權限修改此紀錄" }
+  回應 404：{ "detail": "紀錄不存在" }
+
+DELETE /records/{record_id}
+  說明：刪除飲食紀錄（只能刪除自己的紀錄）
+  權限：需登入
+  回應 200：{ "success": true, "message": "紀錄已刪除" }
+  回應 403：{ "detail": "無權限刪除此紀錄" }
+  回應 404：{ "detail": "紀錄不存在" }
+
+
+----------------------------------------------------------------
+7.5 個人設定 /profile
+----------------------------------------------------------------
+
+GET /profile
+  說明：取得目前登入使用者的個人設定
+  權限：需登入
+  回應 200：UserProfile
+    {
+      "userId":        "user-demo-001",
+      "displayName":   "Demo 使用者",
+      "email":         "demo@demo.com",
+      "gender":        "male",
+      "age":           28,
+      "heightCm":      175.0,
+      "weightKg":      70.0,
+      "activityLevel": "moderate",
+      "dietGoal":      "maintain",
+      "targetCalories":2200,
+      "targetProtein": 140.0,
+      "targetFat":     73.0,
+      "targetCarb":    275.0
+    }
+
+PUT /profile
+  說明：更新個人設定（所有欄位選填）
+  權限：需登入
+  Request Body：ProfileUpdate（同 UserProfile，所有欄位皆為 Optional）
+  回應 200：UserProfile（更新後）
+
+GET /profile/targets
+  說明：取得使用者每日目標值（Dashboard 用）
+  權限：需登入
+  回應 200：
+    {
+      "targetCalories": 2200,
+      "targetProtein":  140.0,
+      "targetFat":      73.0,
+      "targetCarb":     275.0
+    }
+
+
+----------------------------------------------------------------
+7.6 公告 /announcements
+----------------------------------------------------------------
+
+GET /announcements/active
+  說明：取得目前生效的公告（isActive=true 且在日期範圍內）
+  權限：需登入
+  回應 200：Announcement 或 null
+  說明：前端 Dashboard 頁面用於顯示系統通知橫幅
+
+GET /announcements
+  說明：取得所有公告清單（依建立時間倒序）
+  權限：管理員
+  回應 200：List[Announcement]
+
+POST /announcements
+  說明：新增公告
+  權限：管理員
+  Request Body：AnnouncementCreate
+    {
+      "title":     "系統維護通知",
+      "content":   "本系統將於 5/20 進行例行維護。",
+      "startDate": "2026-05-18",
+      "endDate":   "2026-05-20",
+      "isActive":  true
+    }
+  回應 200：Announcement
+
+PUT /announcements/{ann_id}
+  說明：修改公告
+  權限：管理員
+  Request Body：AnnouncementUpdate（所有欄位選填）
+  回應 200：Announcement（更新後）
+  回應 404：{ "detail": "公告不存在" }
+
+DELETE /announcements/{ann_id}
+  說明：刪除公告
+  權限：管理員
+  回應 200：{ "success": true, "message": "公告已刪除" }
+  回應 404：{ "detail": "公告不存在" }
+
+
+----------------------------------------------------------------
+7.7 後台管理 /admin
+----------------------------------------------------------------
+
+GET /admin/stats
+  說明：管理員儀表板統計數據
+  權限：管理員
+  回應 200：AdminStats
+    {
+      "todayActiveCount":  2,
+      "todayRecordCount":  8,
+      "weekRecordCount":   45,
+      "foodDbCount":       10,
+      "topFoods": [
+        { "name": "白飯", "count": 12 },
+        { "name": "雞胸肉（水煮）", "count": 9 },
+        ...
+      ],
+      "todayUsers": [
+        { "userId": "...", "displayName": "Demo 使用者", "email": "demo@demo.com", "count": 5 },
+        ...
+      ]
+    }
+
+GET /admin/users
+  說明：取得所有使用者清單（不含 passwordHash）
+  權限：管理員
+  回應 200：List[AdminUser]
+    [
+      {
+        "userId":      "user-demo-001",
+        "displayName": "Demo 使用者",
+        "email":       "demo@demo.com",
+        "role":        "user",
+        "isActive":    true,
+        "createdAt":   "2026-01-01T00:00:00...",
+        "lastLoginAt": "2026-05-15T10:00:00..."
+      },
+      ...
+    ]
+
+PUT /admin/users/{user_id}/status
+  說明：啟用或停用使用者帳號
+  權限：管理員（不可對自己操作）
+  Request Body：
+    { "isActive": false }
+  回應 200：{ "success": true, "message": "使用者已停用" }
+  回應 400：{ "detail": "不能停用自己的帳號" }
+  回應 404：{ "detail": "使用者不存在" }
+
+PUT /admin/users/{user_id}/role
+  說明：變更使用者角色
+  權限：管理員（不可對自己操作）
+  Request Body：
+    { "role": "admin" }   // 'user' 或 'admin'
+  回應 200：{ "success": true, "message": "角色已變更為 admin" }
+  回應 400：{ "detail": "角色必須為 user 或 admin" }
+
+DELETE /admin/users/{user_id}
+  說明：刪除使用者帳號及其所有飲食紀錄
+  權限：管理員（不可刪除自己）
+  回應 200：{ "success": true, "message": "使用者及其飲食紀錄已刪除" }
+  回應 400：{ "detail": "不能刪除自己的帳號" }
+
+POST /admin/users/{user_id}/reset-password
+  說明：重設使用者密碼
+  權限：管理員
+  Request Body：
+    { "newPassword": "Tmp@abc123" }
+  回應 200：
+    { "tempPassword": "Tmp@abc123", "message": "密碼已重設" }
+  注意：呼叫端負責產生臨時密碼並傳送給使用者
+
+GET /admin/records
+  說明：查詢所有使用者的飲食紀錄（依建立時間倒序）
+  權限：管理員
+  Query Params（均選填）：
+    start_date  string  YYYY-MM-DD
+    end_date    string  YYYY-MM-DD
+    meal_type   string  'breakfast'|'lunch'|'dinner'|'snack'
+    user_id     string  使用者 UUID
+    user_email  string  使用者 Email（完全比對）
+  回應 200：List[AdminRecord]（每筆多含 displayName、userEmail 欄位）
+
+DELETE /admin/records/{record_id}
+  說明：管理員強制刪除任意使用者的飲食紀錄
+  權限：管理員
+  回應 200：{ "success": true, "message": "紀錄已刪除" }
+  回應 404：{ "detail": "紀錄不存在" }
+
+
+================================================================
+8. 錯誤代碼對照
+================================================================
+
+HTTP 狀態碼 | 情境
+-----------|--------------------------------------------------
+200        | 成功（所有成功操作均回傳 200）
+400        | 請求參數錯誤（格式錯誤、業務規則衝突）
+401        | 未登入、Token 無效或過期、密碼錯誤、帳號鎖定
+403        | 已登入但權限不足（一般使用者存取管理員功能）
+404        | 資源不存在
+422        | Pydantic 資料驗證失敗（欄位型別或必填未填）
+
+錯誤回應格式：
+  { "detail": "錯誤訊息字串" }
+
+帳號鎖定時的特殊格式：
+  { "detail": { "locked": true, "message": "帳號已鎖定，請於 15 分鐘後再試" } }
+
+
+================================================================
+9. 啟動方式
+================================================================
+
+環境需求：
+  Python 3.11 以上
+
+安裝依賴：
+  cd backend
+  pip install -r requirements.txt
+
+啟動開發伺服器（含熱重載）：
+  uvicorn main:app --reload --port 8000
+
+啟動正式伺服器：
+  uvicorn main:app --host 0.0.0.0 --port 8000 --workers 1
+
+確認服務：
+  curl http://localhost:8000/
+  → {"status":"ok","message":"DDAS API is running"}
+
+Swagger 互動文件：
+  http://localhost:8000/docs
+
+Demo 帳號：
+  一般使用者：demo@demo.com  / Demo@123
+  管理員：    admin@demo.com / Admin@123
+
+
+================================================================
+END OF DOCUMENT
+================================================================
