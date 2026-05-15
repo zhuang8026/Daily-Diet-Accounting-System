@@ -9,6 +9,7 @@ import AdminFoods from '@/pages/admin/AdminFoods'
 import AdminRecords from '@/pages/admin/AdminRecords'
 import AdminUsers from '@/pages/admin/AdminUsers'
 import AdminAnnouncements from '@/pages/admin/AdminAnnouncements'
+import AdminLogs from '@/pages/admin/AdminLogs'
 
 const guestRoutes = [
     { path: '/login', component: Login },
@@ -28,6 +29,7 @@ const adminRoutes = [
     { path: '/admin/records', component: AdminRecords },
     { path: '/admin/users', component: AdminUsers },
     { path: '/admin/announcements', component: AdminAnnouncements },
+    { path: '/admin/logs', component: AdminLogs },
 ];
 
 export { guestRoutes, authRoutes, adminRoutes };

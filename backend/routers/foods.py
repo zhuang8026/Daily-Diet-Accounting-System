@@ -6,6 +6,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, status
 
 from dependencies import get_current_user, require_admin
+from logger import write_log
 from schemas import (
     Food,
     FoodCreate,
@@ -39,7 +40,7 @@ def search_foods(keyword: str = Query(default="")):
 @router.post("/import-csv")
 def import_csv(
     csvText: str = Form(...),
-    _: SessionUser = Depends(require_admin),
+    current_user: SessionUser = Depends(require_admin),
 ):
     """Parse CSV text and bulk-import foods. First line is header and is skipped."""
     now_str = datetime.now(timezone.utc).isoformat()
@@ -102,6 +103,7 @@ def import_csv(
             failed_count += 1
             errors.append(str(e))
 
+    write_log(current_user.email, "IMPORT_FOOD_CSV", f"匯入 {success_count} 筆，失敗 {failed_count} 筆")
     return {"success": success_count, "failed": failed_count, "errors": errors}
 
 
@@ -148,7 +150,7 @@ def get_food(food_id: str):
 
 
 @router.post("", response_model=Food, status_code=status.HTTP_201_CREATED)
-def create_food(body: FoodCreate, _: SessionUser = Depends(require_admin)):
+def create_food(body: FoodCreate, current_user: SessionUser = Depends(require_admin)):
     now_str = datetime.now(timezone.utc).isoformat()
 
     # Generate next food ID
@@ -179,11 +181,12 @@ def create_food(body: FoodCreate, _: SessionUser = Depends(require_admin)):
         "updatedAt": now_str,
     }
     store.foods.append(new_food)
+    write_log(current_user.email, "ADD_FOOD", f"{body.foodName} ({food_id})")
     return _food_dict_to_model(new_food)
 
 
 @router.put("/{food_id}", response_model=Food)
-def update_food(food_id: str, body: FoodUpdate, _: SessionUser = Depends(require_admin)):
+def update_food(food_id: str, body: FoodUpdate, current_user: SessionUser = Depends(require_admin)):
     food = next((f for f in store.foods if f["foodId"] == food_id), None)
     if not food:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="食物不存在")
@@ -195,11 +198,12 @@ def update_food(food_id: str, body: FoodUpdate, _: SessionUser = Depends(require
         for f in store.foods
     ]
     updated = next(f for f in store.foods if f["foodId"] == food_id)
+    write_log(current_user.email, "UPDATE_FOOD", f"{updated['foodName']} ({food_id})")
     return _food_dict_to_model(updated)
 
 
 @router.delete("/{food_id}", response_model=MessageResponse)
-def delete_food(food_id: str, _: SessionUser = Depends(require_admin)):
+def delete_food(food_id: str, current_user: SessionUser = Depends(require_admin)):
     food = next((f for f in store.foods if f["foodId"] == food_id), None)
     if not food:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="食物不存在")
@@ -212,4 +216,5 @@ def delete_food(food_id: str, _: SessionUser = Depends(require_admin)):
         )
 
     store.foods = [f for f in store.foods if f["foodId"] != food_id]
+    write_log(current_user.email, "DELETE_FOOD", f"{food['foodName']} ({food_id})")
     return MessageResponse(success=True, message="食物已刪除")

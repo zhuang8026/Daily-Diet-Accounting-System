@@ -12,7 +12,8 @@ const ADMIN_NAV = [
   { path: '/admin/foods', icon: 'bi-database-fill', label: '食物管理' },
   { path: '/admin/records', icon: 'bi-journal-text', label: '飲食紀錄' },
   { path: '/admin/users', icon: 'bi-people-fill', label: '使用者管理' },
-  { path: '/admin/announcements', icon: 'bi-megaphone-fill', label: '公告管理' }
+  { path: '/admin/announcements', icon: 'bi-megaphone-fill', label: '公告管理' },
+  { path: '/admin/logs', icon: 'bi-clock-history', label: '操作紀錄' }
 ]
 
 export default function Sidebar({ session }) {

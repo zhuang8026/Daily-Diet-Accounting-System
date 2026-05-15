@@ -230,3 +230,10 @@ class AdminRecord(BaseModel):
 class MessageResponse(BaseModel):
     success: bool
     message: str
+
+
+class LogEntry(BaseModel):
+    timestamp: str
+    user: str
+    action: str
+    detail: str

@@ -6,7 +6,8 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 
 from auth_utils import hash_password
 from dependencies import require_admin
-from schemas import AdminRecord, AdminStats, AdminUser, MessageResponse, SessionUser
+from logger import write_log, read_logs
+from schemas import AdminRecord, AdminStats, AdminUser, LogEntry, MessageResponse, SessionUser
 from store import store
 
 router = APIRouter()
@@ -96,6 +97,7 @@ def toggle_user_status(
         for u in store.users
     ]
     action = "啟用" if isActive else "停用"
+    write_log(current_user.email, "UPDATE_USER_STATUS", f"{user['displayName']} <{user['email']}> → {action}")
     return MessageResponse(success=True, message=f"使用者已{action}")
 
 
@@ -115,6 +117,7 @@ def delete_user(
 
     store.users = [u for u in store.users if u["userId"] != user_id]
     store.records = [r for r in store.records if r["userId"] != user_id]
+    write_log(current_user.email, "DELETE_USER", f"{user['displayName']} <{user['email']}>")
     return MessageResponse(success=True, message="使用者及其飲食紀錄已刪除")
 
 
@@ -122,7 +125,7 @@ def delete_user(
 def reset_password(
     user_id: str,
     newPassword: str = Body(..., embed=True),
-    _: SessionUser = Depends(require_admin),
+    current_user: SessionUser = Depends(require_admin),
 ):
     user = next((u for u in store.users if u["userId"] == user_id), None)
     if not user:
@@ -134,6 +137,7 @@ def reset_password(
         {**u, "passwordHash": new_hash, "updatedAt": now_str} if u["userId"] == user_id else u
         for u in store.users
     ]
+    write_log(current_user.email, "RESET_PASSWORD", f"{user['displayName']} <{user['email']}>")
     return {"tempPassword": newPassword, "message": "密碼已重設"}
 
 
@@ -155,18 +159,20 @@ def change_user_role(
         {**u, "role": role, "updatedAt": now_str} if u["userId"] == user_id else u
         for u in store.users
     ]
+    write_log(current_user.email, "UPDATE_USER_ROLE", f"{user['displayName']} <{user['email']}> → {role}")
     return MessageResponse(success=True, message=f"角色已變更為 {role}")
 
 
 @router.delete("/records/{record_id}", response_model=MessageResponse)
 def admin_delete_record(
     record_id: str,
-    _: SessionUser = Depends(require_admin),
+    current_user: SessionUser = Depends(require_admin),
 ):
     record = next((r for r in store.records if r["recordId"] == record_id), None)
     if not record:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="紀錄不存在")
     store.records = [r for r in store.records if r["recordId"] != record_id]
+    write_log(current_user.email, "DELETE_RECORD", f"{record['foodName']} ({record_id[:8]}...)")
     return MessageResponse(success=True, message="紀錄已刪除")
 
 
@@ -199,6 +205,7 @@ def get_all_records(
     # Sort by createdAt desc
     records = sorted(records, key=lambda r: r.get("createdAt", ""), reverse=True)
 
+
     result = []
     for r in records:
         user = next((u for u in store.users if u["userId"] == r["userId"]), None)
@@ -225,3 +232,9 @@ def get_all_records(
             )
         )
     return result
+
+
+@router.get("/logs", response_model=list)
+def get_logs(_: SessionUser = Depends(require_admin)):
+    entries = read_logs()
+    return [LogEntry(**e) for e in entries]

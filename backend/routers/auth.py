@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 
 from auth_utils import hash_password, verify_password, create_access_token
 from dependencies import get_current_user
+from logger import write_log
 from schemas import LoginRequest, RegisterRequest, TokenResponse, SessionUser, MessageResponse
 from store import store
 
@@ -94,6 +95,7 @@ def login(body: LoginRequest):
         email=user["email"],
         role=user["role"],
     )
+    write_log(email_lower, "AUTH_LOGIN", f"{user['displayName']} 登入成功")
     return TokenResponse(access_token=token, user=session_user)
 
 
@@ -144,6 +146,7 @@ def register(body: RegisterRequest):
         "lastLoginAt": None,
     }
     store.users.append(new_user)
+    write_log(email, "AUTH_REGISTER", f"{display_name} 註冊新帳號")
     return MessageResponse(success=True, message="註冊成功，請登入")
 
 
