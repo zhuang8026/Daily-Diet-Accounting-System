@@ -47,12 +47,22 @@ Daily-Diet-Accounting-System/
 
 ## 快速啟動
 
+### 0. 編譯 C log 系統（首次需執行）
+
+```bash
+cd core
+make
+cd ..
+```
+
+> 若未執行此步驟，管理員後台的操作紀錄功能將無法記錄資料。
+
 ### 1. 啟動後端
 
 ```bash
 cd backend
-python3 -m venv .venv
-source .venv/bin/activate       # Windows: .venv\Scripts\activate
+python3 -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 ```
