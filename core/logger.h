@@ -1,3 +1,6 @@
+// logger.h
+// 對外函式宣告
+
 #ifndef LOGGER_H
 #define LOGGER_H
 
