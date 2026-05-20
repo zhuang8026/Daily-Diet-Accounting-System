@@ -2,12 +2,13 @@ import re
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, Response, status, Depends
 
+from config import COOKIE_NAME, COOKIE_MAX_AGE, COOKIE_SECURE, COOKIE_SAMESITE
 from utils.auth_utils import hash_password, verify_password, create_access_token
 from utils.dependencies import get_current_user
 from utils.logger import write_log
-from schemas import LoginRequest, RegisterRequest, TokenResponse, SessionUser, MessageResponse
+from schemas import LoginRequest, LoginResponse, RegisterRequest, SessionUser, MessageResponse
 from store import store
 
 router = APIRouter()
@@ -37,8 +38,8 @@ def _validate_email(email: str) -> bool:
     return "." in domain
 
 
-@router.post("/login", response_model=TokenResponse)
-def login(body: LoginRequest):
+@router.post("/login", response_model=LoginResponse)
+def login(body: LoginRequest, response: Response):
     email_lower = body.email.strip().lower()
     user = next((u for u in store.users if u["email"].lower() == email_lower), None)
 
@@ -95,8 +96,16 @@ def login(body: LoginRequest):
         email=user["email"],
         role=user["role"],
     )
+    response.set_cookie(
+        key=COOKIE_NAME,
+        value=token,
+        httponly=True,
+        secure=COOKIE_SECURE,
+        samesite=COOKIE_SAMESITE,
+        max_age=COOKIE_MAX_AGE,
+    )
     write_log(email_lower, "AUTH_LOGIN", f"{user['displayName']} 登入成功")
-    return TokenResponse(access_token=token, user=session_user)
+    return LoginResponse(user=session_user)
 
 
 @router.post("/register", response_model=MessageResponse)
@@ -148,6 +157,12 @@ def register(body: RegisterRequest):
     store.users.append(new_user)
     write_log(email, "AUTH_REGISTER", f"{display_name} 註冊新帳號")
     return MessageResponse(success=True, message="註冊成功，請登入")
+
+
+@router.post("/logout", response_model=MessageResponse)
+def logout(response: Response):
+    response.delete_cookie(key=COOKIE_NAME, samesite=COOKIE_SAMESITE)
+    return MessageResponse(success=True, message="已登出")
 
 
 @router.get("/me", response_model=SessionUser)

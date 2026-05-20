@@ -12,7 +12,7 @@ const register = async (email, password, displayName) => {
 const login = async (email, password) => {
   try {
     const { data } = await apiClient.post('/auth/login', { email, password })
-    localStorage.setItem('ddas_token', data.access_token)
+    // Cookie is set by the backend (HttpOnly); only store display metadata locally
     localStorage.setItem('ddas_session', JSON.stringify(data.user))
     return { success: true, message: '登入成功' }
   } catch (err) {
@@ -24,8 +24,12 @@ const login = async (email, password) => {
   }
 }
 
-const logout = () => {
-  localStorage.removeItem('ddas_token')
+const logout = async () => {
+  try {
+    await apiClient.post('/auth/logout')
+  } catch {
+    // ignore network errors; still clear local session
+  }
   localStorage.removeItem('ddas_session')
 }
 

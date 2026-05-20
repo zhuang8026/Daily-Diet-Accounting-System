@@ -26,6 +26,10 @@ class TokenResponse(BaseModel):
     user: SessionUser
 
 
+class LoginResponse(BaseModel):
+    user: SessionUser
+
+
 class Food(BaseModel):
     foodId: str
     foodName: str

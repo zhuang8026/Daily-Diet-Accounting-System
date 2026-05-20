@@ -8,8 +8,8 @@ export function AuthProvider({ children }) {
 
   const refresh = useCallback(() => setSession(getCurrentSession()), [])
 
-  const logout = useCallback(() => {
-    authLogout()
+  const logout = useCallback(async () => {
+    await authLogout()
     setSession(null)
   }, [])
 

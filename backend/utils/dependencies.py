@@ -1,18 +1,21 @@
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from typing import Optional
+
+from fastapi import Cookie, Depends, HTTPException, status
 from jose import JWTError
+
 from utils.auth_utils import decode_token
 from store import store
 from schemas import SessionUser
 
-security = HTTPBearer()
 
-
-def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-) -> SessionUser:
+def get_current_user(ddas_token: Optional[str] = Cookie(None)) -> SessionUser:
+    if not ddas_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="未登入或 Token 已過期",
+        )
     try:
-        payload = decode_token(credentials.credentials)
+        payload = decode_token(ddas_token)
         user_id = payload.get("userId")
         user = next((u for u in store.users if u["userId"] == user_id), None)
         if not user or not user["isActive"]:
