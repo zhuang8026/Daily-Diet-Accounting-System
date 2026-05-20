@@ -4,9 +4,9 @@ from typing import Optional
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 
-from auth_utils import hash_password
-from dependencies import require_admin
-from logger import write_log, read_logs
+from utils.auth_utils import hash_password
+from utils.dependencies import require_admin
+from utils.logger import write_log, read_logs
 from schemas import AdminRecord, AdminStats, AdminUser, LogEntry, MessageResponse, SessionUser
 from store import store
 

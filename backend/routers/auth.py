@@ -4,9 +4,9 @@ from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, status, Depends
 
-from auth_utils import hash_password, verify_password, create_access_token
-from dependencies import get_current_user
-from logger import write_log
+from utils.auth_utils import hash_password, verify_password, create_access_token
+from utils.dependencies import get_current_user
+from utils.logger import write_log
 from schemas import LoginRequest, RegisterRequest, TokenResponse, SessionUser, MessageResponse
 from store import store
 

@@ -1,4 +1,4 @@
-from auth_utils import hash_password
+from utils.auth_utils import hash_password
 
 MOCK_USERS = [
     {

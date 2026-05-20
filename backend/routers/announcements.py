@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from dependencies import get_current_user, require_admin
+from utils.dependencies import get_current_user, require_admin
 from schemas import Announcement, AnnouncementCreate, AnnouncementUpdate, MessageResponse, SessionUser
 from store import store
 

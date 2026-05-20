@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-from dependencies import get_current_user
+from utils.dependencies import get_current_user
 from schemas import (
     DailySummary,
     MessageResponse,

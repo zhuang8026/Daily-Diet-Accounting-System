@@ -5,8 +5,8 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, status
 
-from dependencies import get_current_user, require_admin
-from logger import write_log
+from utils.dependencies import get_current_user, require_admin
+from utils.logger import write_log
 from schemas import (
     Food,
     FoodCreate,
