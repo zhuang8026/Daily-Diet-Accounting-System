@@ -1,4 +1,4 @@
 .DS_Store
 ddas.log
-.venv/
-venv/
+.venv
+venv
