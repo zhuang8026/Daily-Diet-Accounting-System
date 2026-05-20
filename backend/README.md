@@ -2,7 +2,7 @@
 
 每日飲食記帳系統（Daily Diet Accounting System）的後端 API 服務。
 
-> 完整 API 規格請見 [API_SPEC.txt](./API_SPEC.txt)
+> 完整 API 規格請見 [API_SPEC.txt](./docs/API_SPEC.txt)
 
 ---
 
@@ -46,12 +46,15 @@ uvicorn main:app --reload --port 8000
 backend/
 ├── main.py              # FastAPI 應用程式入口，CORS 與 Router 掛載
 ├── config.py            # JWT 設定（secret、演算法、有效期）、CORS 來源
-├── auth_utils.py        # JWT 簽發（create_token）與驗證（decode_token）
-├── dependencies.py      # FastAPI 依賴注入：get_current_user、require_admin
 ├── schemas.py           # Pydantic v2 請求/回應模型（camelCase）
 ├── store.py             # In-Memory 資料儲存 Singleton（重啟後重置）
 ├── requirements.txt
-├── API_SPEC.txt         # 完整 API 規格書
+├── utils/
+│   ├── auth_utils.py    # JWT 簽發（create_token）與驗證（decode_token）
+│   ├── dependencies.py  # FastAPI 依賴注入：get_current_user、require_admin
+│   └── logger.py        # 操作日誌讀寫（ddas.log）
+├── docs/
+│   └── API_SPEC.txt     # 完整 API 規格書
 ├── routers/
 │   ├── auth.py          # POST /auth/login、/auth/register
 │   ├── foods.py         # GET/POST/PUT/DELETE /foods、/foods/search、CSV 匯入
@@ -61,8 +64,8 @@ backend/
 │   └── admin.py         # /admin/stats、users、foods、records、announcements
 └── mock/
     ├── users.py         # Mock 使用者（demo、admin）
-    ├── foods.py         # Mock 食物資料（56 筆）
-    └── records.py       # Mock 飲食紀錄（載入 ../client/src/assets/api/demoRecords.json）
+    ├── foods.py         # Mock 食物資料（10 筆）
+    └── records.py       # Mock 飲食紀錄（載入 client/src/assets/api/demoRecords.json）
 ```
 
 ---
@@ -118,7 +121,7 @@ store.login_attempts # dict — email → {count, locked_until}
 | `GET /announcements` | 當前生效公告 | 是 |
 | `GET /admin/*` | 管理員統計、使用者/食物/紀錄/公告管理 | 管理員 |
 
-完整端點文件詳見 [API_SPEC.txt](./API_SPEC.txt) 或啟動後瀏覽 `/docs`。
+完整端點文件詳見 [API_SPEC.txt](./docs/API_SPEC.txt) 或啟動後瀏覽 `/docs`。
 
 ---
 
