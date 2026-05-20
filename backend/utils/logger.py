@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Dict, List
 
 # 日誌檔案路徑（固定於 backend/ 目錄下）
-_LOG_PATH = pathlib.Path(__file__).parent / "ddas.log"
+_LOG_PATH = pathlib.Path(__file__).parent.parent / "ddas.log"
 
 # 多執行緒寫入鎖，防止並發時日誌交錯
 _lock = threading.Lock()
