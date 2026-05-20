@@ -1,48 +1,45 @@
-import ctypes
 import pathlib
-from typing import List, Dict
+import threading
+from datetime import datetime
+from typing import Dict, List
 
-_lib_path = pathlib.Path(__file__).parent.parent / "core" / "liblogger.so"
+# 日誌檔案路徑（固定於 backend/ 目錄下）
+_LOG_PATH = pathlib.Path(__file__).parent / "ddas.log"
 
-# 載入 liblogger.so
-try:
-    _lib = ctypes.CDLL(str(_lib_path))
-    _lib.log_write.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
-    _lib.log_write.restype = None
-    _lib.log_read_all.argtypes = [ctypes.c_char_p, ctypes.c_int]
-    _lib.log_read_all.restype = ctypes.c_int
-    _AVAILABLE = True
-except OSError:
-    _AVAILABLE = False
+# 多執行緒寫入鎖，防止並發時日誌交錯
+_lock = threading.Lock()
 
-# 寫入日誌
+
 def write_log(user: str, action: str, detail: str) -> None:
-    if not _AVAILABLE:
-        return
-    
-    # 呼叫 C 語言的 log_write 函式
-    _lib.log_write(
-        user.encode("utf-8"),
-        action.encode("utf-8"),
-        detail.encode("utf-8"),
-    )
+    """
+    追加一行日誌到 ddas.log。
+    格式：[YYYY-MM-DD HH:MM:SS] user | action | detail
+    對應 C 的 log_write(user, action, detail)
+    """
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    line = f"[{timestamp}] {user} | {action} | {detail}\n"
+    with _lock:
+        with _LOG_PATH.open("a", encoding="utf-8") as fp:
+            fp.write(line)
 
 
-# 讀取日誌
 def read_logs() -> List[Dict]:
-    if not _AVAILABLE:
+    """
+    讀取 ddas.log 全部內容，解析後以最新到最舊順序回傳。
+    對應 C 的 log_read_all(output, max_size)。
+
+    每筆回傳格式：
+        {"timestamp": str, "user": str, "action": str, "detail": str}
+    """
+    if not _LOG_PATH.exists():
         return []
 
-    buf_size = 1024 * 1024  # 1 MB
-    buf = ctypes.create_string_buffer(buf_size) # 建立字串緩衝區
+    with _lock:
+        raw = _LOG_PATH.read_text(encoding="utf-8", errors="replace")
 
-    # 呼叫 C 語言的 log_read_all 函式
-    _lib.log_read_all(buf, ctypes.c_int(buf_size))
-
-    raw = buf.value.decode("utf-8", errors="replace")
     lines = [line for line in raw.splitlines() if line.strip()]
 
-    entries = []
+    entries: List[Dict] = []
     for line in reversed(lines):  # 最新到最舊
         try:
             bracket_end = line.index("]")
