@@ -1,0 +1,564 @@
+# 每日飲食記帳系統（Daily Diet Accounting System, DDAS）技術簡報
+
+---
+
+## Slide 1｜專案介紹
+
+**負責講者：Person A**
+
+### 內容重點
+- 專案名稱：每日飲食記帳系統（Daily Diet Accounting System, DDAS）
+- 系統目的
+  - 記錄每日三餐與飲食內容
+  - 追蹤每日熱量攝取
+  - 分析三大營養素：蛋白質、脂肪、碳水化合物
+  - 協助使用者建立長期飲食管理習慣
+- 使用者角色
+  - 一般用戶：記錄、查詢、分析個人飲食資料
+  - 管理員：管理食物資料、用戶帳號、公告與操作日誌
+- 現行技術棧
+  - Frontend：React 18 + Vite 5 + React Router v6 + Bootstrap 5.3 + Chart.js 4.4
+  - Backend：FastAPI + Pydantic v2 + python-jose + passlib[bcrypt]
+  - Auth：JWT + HttpOnly Cookie
+  - Testing：Playwright E2E
+
+### 講者稿
+這個系統主要解決「每日飲食難以持續追蹤」的問題，讓使用者可以記錄三餐並查看營養趨勢。  
+除了用戶側的飲食管理，我們也設計了管理員後台，負責維護食物資料、帳號與系統紀錄。  
+目前系統採用 React 前端與 FastAPI 後端，並使用 JWT 搭配 HttpOnly Cookie 完成登入認證。
+
+---
+
+## Slide 2｜現行系統技術架構總覽
+
+**負責講者：Person A**
+
+### 內容重點
+- 前端架構
+  - React 18 + Vite 5 建立 SPA
+  - React Router v6 使用 HashRouter 管理頁面路由
+  - Bootstrap 5.3 + SCSS 處理版面與響應式樣式
+  - Chart.js 4.4 呈現熱量與營養素趨勢圖表
+- 後端架構
+  - FastAPI 提供 RESTful API
+  - Pydantic v2 負責 request / response 資料驗證
+  - in-memory store 作為 Demo 階段資料層
+  - Router 模組化拆分不同功能域
+- 認證機制
+  - 後端驗證帳密
+  - 成功後簽發 JWT
+  - JWT 透過 HttpOnly Cookie 回傳前端
+  - 前端 API 請求使用 axios `withCredentials: true` 自動帶出 Cookie
+- 測試機制
+  - Playwright E2E 測試
+  - Desktop Chrome + Mobile Pixel 5 雙平台驗證
+
+### 講者稿
+這一頁是目前最新版系統的技術總覽。  
+前端負責畫面、路由與互動，後端負責資料驗證、認證授權與 API 邏輯。  
+登入狀態全部由 HttpOnly Cookie 管理，前端不直接保存 Token，這是目前資安設計的核心。
+
+---
+
+## Slide 3｜使用者角色與功能範圍（user-flow）
+
+**負責講者：Person A**
+
+### 內容重點
+> 【請自行插入 user-flow 流程圖】
+
+- 一般用戶功能
+  - 註冊與登入
+  - 飲食紀錄新增、查詢、編輯、刪除
+  - 食物關鍵字搜尋與類別篩選
+  - 每日熱量與三大營養素追蹤
+  - 7 天／30 天趨勢報表
+  - 個人基本資料與飲食目標設定
+- 管理員功能
+  - 繼承一般用戶所有功能
+  - 食物資料庫 CRUD
+  - CSV 批量匯入食物資料
+  - 用戶啟用／停用、角色調整、密碼重設
+  - 公告管理
+  - 操作日誌查詢
+- 權限設計
+  - 一般用戶只能存取自己的資料
+  - 管理員可存取後台管理資料
+  - 後端透過 `require_admin()` 驗證管理員權限
+
+### 講者稿
+系統角色分成一般用戶與管理員。  
+一般用戶主要操作自己的飲食紀錄與報表，管理員則負責整體資料維護與後台管理。  
+這張 user-flow 圖可以看出管理員是建立在一般用戶功能之上，再額外增加管理權限。
+
+---
+
+## Slide 4｜前端元件架構（system-flow）
+
+**負責講者：Person B**
+
+### 內容重點
+> 【請自行插入 system-flow 流程圖】
+
+- 啟動層
+  - `main.jsx`：載入 React App
+  - 匯入 Bootstrap 與全域 SCSS
+- Provider 層
+  - `AuthProvider`：管理登入狀態與使用者資料
+  - `ToastProvider`：管理全域提示訊息
+- 路由層
+  - `HashRouter`：支援靜態部署環境
+  - `GuestOnly`：限制已登入者進入登入／註冊頁
+  - `RequireAuth`：限制未登入者進入系統頁
+  - `RequireAdmin`：限制非管理員進入後台
+- Layout 層
+  - `Layout.jsx`：Header、Sidebar、BottomNav、Outlet
+- 頁面層
+  - Dashboard、FoodSearch、Report、Settings
+  - AdminDashboard、AdminFoods、AdminUsers、AdminLogs
+- Service 層
+  - `apiClient.js`：統一 axios 設定
+  - auth、record、food、profile 等 service 封裝 API 呼叫
+
+### 講者稿
+前端採用分層架構，讓畫面、路由、狀態與 API 呼叫彼此分離。  
+三種路由守衛負責控制不同使用者能不能進入指定頁面。  
+Service 層則把 API 呼叫集中管理，避免每個頁面直接寫 axios 邏輯。
+
+---
+
+## Slide 5｜系統整體架構（前後端分離）
+
+**負責講者：Person B**
+
+### 內容重點
+- 前後端分離架構
+  - React SPA 負責 UI 與使用者互動
+  - FastAPI 負責 API、資料驗證、認證與授權
+  - axios 作為前後端通訊橋樑
+  - JWT 由 HttpOnly Cookie 自動隨請求送出
+- 後端目錄分層
+  - `main.py`：FastAPI 入口、CORS middleware、Router 掛載
+  - `config.py`：JWT、Cookie、CORS 設定
+  - `schemas.py`：Pydantic v2 資料模型
+  - `store.py`：in-memory 資料層 singleton
+  - `utils/`：認證工具、Depends、logger
+  - `routers/`：auth、foods、records、profile、announcements、admin
+  - `mock/`：Demo seed 資料
+- API 模組
+  - `/auth`：登入、註冊、登出、取得目前使用者
+  - `/foods`：食物資料 CRUD 與搜尋
+  - `/records`：飲食紀錄 CRUD 與摘要統計
+  - `/profile`：個人設定
+  - `/announcements`：公告管理
+  - `/admin`：後台統計、用戶管理、日誌查詢
+
+### 講者稿
+目前系統採用前後端分離，前端不直接處理認證細節，而是透過 Cookie 自動與後端互動。  
+後端依照責任切分成設定、模型、資料、工具與路由層。  
+雖然目前資料層是 in-memory store，但架構上已經保留未來替換資料庫的空間。
+
+---
+
+## Slide 6｜資料流設計（data-flow）
+
+**負責講者：Person B**
+
+### 內容重點
+> 【請自行插入 data-flow 流程圖】
+
+- 使用者資料流
+  - 使用者操作 React 頁面
+  - 頁面呼叫 service function
+  - service 透過 axios 呼叫 FastAPI API
+  - Cookie 自動隨請求送出
+  - 後端驗證 JWT 與使用者狀態
+  - Router 呼叫 store.py 讀寫資料
+  - API 回傳 JSON 給前端更新畫面
+- 功能資料流
+  - 身份驗證：`/auth/login`、`/auth/me`、`/auth/logout`
+  - 食物資料：`/foods` 搜尋、篩選、CRUD
+  - 飲食紀錄：`/records` 新增、編輯、刪除、摘要
+  - 個人設定：`/profile` 讀取與更新目標
+  - 趨勢報表：依區間取得熱量與營養素統計
+  - 管理後台：統計、用戶、公告、日誌資料查詢
+- 權限控制
+  - 一般 API 需通過 `get_current_user()`
+  - 管理員 API 需額外通過 `require_admin()`
+  - 停用帳號無法繼續存取系統資料
+
+### 講者稿
+這張資料流圖要說明的是：使用者每一次操作都會透過 service 層進入 FastAPI。  
+後端會先驗證 Cookie 中的 JWT，再依照使用者角色決定能不能存取指定資料。  
+這樣可以把資料讀寫與權限判斷集中在後端，讓系統邏輯更一致。
+
+---
+
+## Slide 7｜程式執行流程（program-flow）
+
+**負責講者：Person B**
+
+### 內容重點
+> 【請自行插入 program-flow 流程圖】
+
+- 系統啟動流程
+  - Vite 啟動 React SPA
+  - `main.jsx` 掛載 App
+  - `AuthProvider` 初始化登入狀態
+  - 前端呼叫 `/auth/me` 確認目前使用者
+- 登入流程
+  - 使用者輸入 email / password
+  - 前端送出 `POST /auth/login`
+  - 後端驗證帳密與帳號狀態
+  - 成功後簽發 JWT
+  - 後端以 HttpOnly Cookie 回傳 JWT
+  - 前端取得使用者基本資料並導向 Dashboard
+- 使用流程
+  - Dashboard 載入每日紀錄與營養摘要
+  - 使用者新增／編輯／刪除飲食紀錄
+  - 後端每次請求都重新驗證 Cookie
+  - 管理員進入後台時額外驗證 role
+- 登出流程
+  - 前端送出 `POST /auth/logout`
+  - 後端刪除 Cookie
+  - 前端導回登入頁
+
+### 講者稿
+這張圖呈現最新版的完整執行流程。  
+重點是登入後 JWT 只存在 HttpOnly Cookie，由瀏覽器自動帶給後端驗證。  
+每次進入受保護頁面或呼叫 API 時，後端都會重新確認使用者身份與權限。
+
+---
+
+## Slide 8｜核心功能展示 — 用戶側
+
+**負責講者：Person C**
+
+### 內容重點
+- Dashboard
+  - 每日飲食紀錄列表
+  - 新增／編輯／刪除飲食紀錄
+  - 熱量圓餅圖
+  - 蛋白質、脂肪、碳水進度條
+- FoodSearch
+  - 關鍵字搜尋
+  - debounce 防抖處理
+  - 類別篩選
+  - 熱量範圍篩選
+  - 快速加入飲食紀錄
+- Report
+  - 7 天／30 天切換
+  - 熱量趨勢折線圖
+  - 三大營養素趨勢分析
+- Settings
+  - 身高、體重、性別、年齡輸入
+  - BMR 自動計算
+  - 活動量選擇
+  - 每日熱量目標設定
+
+### 講者稿
+用戶側的核心是 Dashboard，使用者可以在這裡完成每日飲食紀錄。  
+FoodSearch 則提供更快的食物搜尋與快速紀錄功能。  
+Report 和 Settings 讓系統不只是記錄工具，也能協助使用者追蹤長期飲食狀況。
+
+---
+
+## Slide 9｜核心功能展示 — 管理員側
+
+**負責講者：Person C**
+
+### 內容重點
+- AdminDashboard
+  - 今日活躍用戶數
+  - 本週紀錄總數
+  - 食物資料庫筆數
+  - Top 10 食物排行
+- AdminFoods
+  - 食物新增、編輯、刪除
+  - CSV 批量匯入
+  - 匯入錯誤逐行回報
+- AdminUsers
+  - 用戶清單查詢
+  - 帳號啟用／停用
+  - user / admin 角色切換
+  - 密碼重設
+- AdminLogs
+  - 操作審計日誌
+  - 顯示時間戳、操作者 email、操作類型與詳細內容
+  - 重要操作使用 Badge 強化辨識
+
+### 講者稿
+管理員後台主要負責系統維運與資料管理。  
+除了食物與用戶管理之外，操作日誌也是重要功能，因為它能追蹤誰在什麼時間做了什麼敏感操作。  
+這能提升系統的可稽核性，也方便未來除錯與管理。
+
+---
+
+## Slide 10｜JWT + HttpOnly Cookie 認證機制與帳號鎖定
+
+**負責講者：Person C**
+
+### 內容重點
+- 登入流程
+  1. 前端送出 `POST /auth/login`
+  2. 後端驗證 email / password
+  3. 檢查帳號是否啟用與是否被鎖定
+  4. 成功後簽發 JWT（HS256，24 小時有效）
+  5. 後端透過 `response.set_cookie(httponly=True, samesite="lax")` 寫入 Cookie
+  6. 後續請求由 axios `withCredentials: true` 自動帶出 Cookie
+  7. 登出時呼叫 `POST /auth/logout`，後端刪除 Cookie
+  8. 若 API 回傳 401，前端導向登入頁
+- JWT payload
+  - userId
+  - email
+  - role
+  - exp
+- 雙層授權
+  - `get_current_user()`：解碼 Cookie 中的 JWT，確認使用者存在且啟用
+  - `require_admin()`：額外確認角色是否為 admin
+- 帳號鎖定
+  - 登入失敗累計 5 次後鎖定 15 分鐘
+  - 前端顯示鎖定提示
+  - 鎖定時間到期後可重新登入
+
+### 講者稿
+最新版登入機制是由後端驗證帳密，並把 JWT 寫入 HttpOnly Cookie。  
+前端不需要、也不能直接讀取 Token，這能降低 Token 被前端腳本竊取的風險。  
+另外，登入失敗 5 次會鎖定帳號 15 分鐘，用來降低暴力破解風險。
+
+---
+
+## Slide 11｜資安設計 — 已實作防禦機制
+
+**負責講者：Person C**
+
+### 內容重點
+- 密碼安全
+  - passlib[bcrypt] 進行密碼雜湊
+  - 不儲存明文密碼
+  - 密碼強度驗證：長度 ≥ 6，且至少符合 3 種字元類型
+- 認證與授權
+  - JWT HS256 簽章
+  - JWT 具備 exp claim，有效期 24 小時
+  - HttpOnly Cookie 傳輸認證資訊
+  - `get_current_user()` 驗證登入身份與帳號狀態
+  - `require_admin()` 驗證管理員權限
+- 前端路由保護
+  - GuestOnly
+  - RequireAuth
+  - RequireAdmin
+- 輸入驗證
+  - Pydantic v2 強制型別驗證
+  - API 請求格式錯誤自動回傳 422
+  - Email 格式與角色值限制
+- 網路層防護
+  - CORS 白名單限制允許來源
+  - axios 統一攔截 401
+- 可稽核性
+  - Thread-safe logger 記錄 11 種敏感操作
+  - 管理員可於 AdminLogs 查閱操作歷史
+
+### 講者稿
+資安設計不是只做登入，而是從密碼、Cookie、後端授權、輸入驗證到操作日誌都有分層防護。  
+其中 HttpOnly Cookie、後端 Depends 授權與帳號鎖定，是目前認證安全的核心。  
+Pydantic 驗證與操作日誌則讓資料格式與管理行為更容易追蹤。
+
+---
+
+## Slide 12｜資安設計 — 現存風險與改善方向
+
+**負責講者：Person C**
+
+### 內容重點
+- 高風險
+  - `JWT_SECRET` 硬編碼在 `config.py`
+  - 改善方向：改用 `os.getenv("JWT_SECRET")` 搭配 `.env`
+  - 密碼重設 API 需確認是否套用與註冊相同的強度檢查
+- 中風險
+  - `sanitizeInput()` 若僅移除 HTML 標籤，防護不足
+  - 改善方向：改用 DOMPurify 處理使用者輸入
+  - 臨時密碼若使用非密碼學安全亂數，安全性不足
+  - 改善方向：改用 `crypto.getRandomValues()` 或後端安全亂數
+- 低風險
+  - 密碼長度需設定上限，例如 128 字元，避免 bcrypt DoS
+  - 後台大量查詢 API 建議加入 limit / offset 分頁
+- 正式部署前優先事項
+  - Secret 全部環境變數化
+  - 資料庫持久化
+  - Cookie 參數依部署環境設定 Secure / SameSite
+  - 補齊前後端錯誤處理與稽核規則
+
+### 講者稿
+這一頁不是在講已經淘汰的架構，而是針對目前最新版系統做風險盤點。  
+目前比較重要的是 JWT secret、密碼重設流程與輸入清理機制。  
+如果要正式部署，還需要補上環境變數、資料庫與更完整的 Cookie 安全設定。
+
+---
+
+## Slide 13｜技術亮點 — React Stale Closure Bug 修復
+
+**負責講者：Person D**
+
+### 內容重點
+- 問題描述
+  - FoodSearch 輸入關鍵字後搜尋結果不正確
+  - debounce 延遲搜尋沒有取得最新 keyword
+- 根本原因
+  - `setTimeout` callback 建立時會捕捉當下 state 快照
+  - 後續 keyword 更新不會自動影響已建立的 closure
+  - 導致搜尋請求使用到舊資料
+- 修法
+  1. 新增 `debouncedKeyword` state
+  2. 使用 `useEffect([keyword])` 延遲更新 `debouncedKeyword`
+  3. cleanup 函式使用 `clearTimeout()` 取消前一次計時
+  4. 主搜尋 effect 改依賴 `debouncedKeyword`、分類、熱量範圍與頁碼
+- 驗證方式
+  - Playwright 輸入「雞胸肉」
+  - 確認搜尋結果正確篩出對應食物
+
+### 講者稿
+這是開發過程中遇到的真實 React bug。  
+問題不是 API 壞掉，而是 React state 與 JavaScript closure 的互動造成搜尋拿到舊值。  
+透過 debouncedKeyword 拆分即時輸入值與實際查詢值後，搜尋邏輯就變得穩定。
+
+---
+
+## Slide 14｜技術亮點 — 後端架構分層設計
+
+**負責講者：Person D**
+
+### 內容重點
+- 七層後端結構
+  - 入口層：`main.py`
+  - 設定層：`config.py`
+  - 模型層：`schemas.py`
+  - 資料層：`store.py`
+  - 工具層：`utils/`
+  - 路由層：`routers/`
+  - Mock 層：`mock/`
+- 各層職責
+  - `main.py`：建立 app、掛載 CORS、掛載 router
+  - `config.py`：集中管理 JWT、Cookie 與 CORS 設定
+  - `schemas.py`：定義 Pydantic request / response model
+  - `store.py`：集中管理資料讀寫
+  - `utils/auth_utils.py`：JWT 與密碼工具
+  - `utils/dependencies.py`：FastAPI Depends 權限驗證
+  - `utils/logger.py`：操作日誌寫入與讀取
+- 分層好處
+  - Router 不直接處理底層驗證細節
+  - 權限邏輯可重複使用
+  - 資料模型集中管理
+  - 未來替換資料庫時影響範圍較小
+
+### 講者稿
+後端採用分層設計，目的是讓每個檔案只負責自己的任務。  
+例如登入驗證不寫散在每個 API，而是透過 Depends 統一處理。  
+這樣未來如果要替換資料庫或增加 API，維護成本會比較低。
+
+---
+
+## Slide 15｜技術亮點 — Thread-safe Logger 與 Playwright E2E 測試
+
+**負責講者：Person D**
+
+### 內容重點
+- Thread-safe Logger
+  - `utils/logger.py` 使用 `threading.Lock()`
+  - 避免多請求同時寫入時日誌交錯
+  - 寫入格式：`[YYYY-MM-DD HH:MM:SS] user | action | detail`
+  - 日誌檔：`backend/ddas.log`
+- 11 種敏感操作
+  - AUTH_LOGIN
+  - AUTH_REGISTER
+  - ADD_FOOD
+  - UPDATE_FOOD
+  - DELETE_FOOD
+  - IMPORT_FOOD_CSV
+  - DELETE_USER
+  - UPDATE_USER_STATUS
+  - UPDATE_USER_ROLE
+  - RESET_PASSWORD
+  - DELETE_RECORD
+- Playwright E2E 測試
+  - 7 個 TC
+  - 6 個測試檔案
+  - Desktop Chrome + Mobile Pixel 5
+  - 共 38 個測試案例全數通過
+- 測試範圍
+  - 登入／註冊／帳號鎖定
+  - 飲食紀錄 CRUD
+  - 管理員食物 CRUD
+  - 趨勢報表切換
+  - 響應式佈局
+  - 個人設定
+
+### 講者稿
+Logger 需要 thread-safe，是因為後端可能同時處理多個請求，如果同時寫檔就可能造成日誌內容交錯。  
+Playwright 則是使用真實瀏覽器模擬使用者操作，不只是測函式，而是測整個系統流程。  
+目前 38 個案例都通過，代表主要功能與響應式版面都有被驗證。
+
+---
+
+## Slide 16｜已知限制與未來規劃
+
+**負責講者：Person D**
+
+### 內容重點
+- 現況限制
+  - in-memory store：後端重啟後資料會重置
+  - API baseURL 需依部署環境調整
+  - `JWT_SECRET` 需移至環境變數
+  - 大量資料查詢尚未完整加入分頁
+- 資料層規劃
+  - 將 `store.py` 替換為 SQLAlchemy
+  - Demo 可使用 SQLite
+  - 正式部署可使用 PostgreSQL
+  - 補上 migration 與資料初始化流程
+- 部署規劃
+  - 前端使用 `import.meta.env.VITE_API_URL`
+  - 後端依環境設定 CORS 白名單
+  - Cookie secure 參數依 HTTP / HTTPS 環境調整
+- 資安強化
+  - Secret 環境變數化
+  - 密碼重設強度驗證
+  - 使用 DOMPurify 強化輸入清理
+  - 後台查詢加入分頁與權限稽核
+- 文件更新
+  - 流程圖需與最新版前後端分離架構一致
+  - 補上 API 文件與測試報告
+
+### 講者稿
+目前系統已經具備完整功能，但仍屬於 Demo 階段架構。  
+最重要的限制是資料尚未持久化，因此正式部署前需要導入資料庫。  
+另外，環境變數、Cookie 安全設定與 API 分頁也都需要在正式版補齊。
+
+---
+
+## Slide 17｜總結
+
+**負責講者：Person D**
+
+### 內容重點
+- 專案成果
+  - 完整前後端分離系統
+  - React 18 + Vite 前端架構
+  - FastAPI 後端 API 架構
+  - JWT + HttpOnly Cookie 認證
+  - 管理員後台與操作日誌
+  - Playwright E2E 測試 38 案例全數通過
+- 技術收穫
+  - React Router 與路由守衛設計
+  - AuthProvider 全域登入狀態管理
+  - FastAPI Depends 權限驗證
+  - JWT 認證與 Cookie 安全設計
+  - React stale closure 問題排查
+  - Thread-safe logger 實作
+  - E2E 測試流程建立
+- Demo 帳號
+  - 一般用戶：demo@demo.com / Demo@123
+  - 管理員：admin@demo.com / Admin@123
+
+### 講者稿
+這個專案完成了從前端畫面、後端 API、認證授權到 E2E 測試的完整系統。  
+技術重點不只是功能完成，也包含資安設計、後端分層、錯誤排查與測試驗證。  
+以上是我們的專題報告，接下來歡迎老師與同學提問。
