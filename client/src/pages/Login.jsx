@@ -58,7 +58,7 @@ export default function Login() {
             <p className="text-secondary small">記錄每一餐，成就更好的自己 🌱</p>
           </div>
 
-          <form onSubmit={handleSubmit} noValidate>
+          <form id="login-form" onSubmit={handleSubmit} noValidate>
             <div className="mb-3">
               <label htmlFor="login-email" className="form-label">電子郵件</label>
               <input
@@ -89,7 +89,7 @@ export default function Login() {
             </div>
 
             {alertMsg && (
-              <div className={`alert ${alertLocked ? 'alert-warning' : 'alert-danger'} mb-3`} role="alert" aria-live="assertive">
+              <div id="login-alert" className={`alert ${alertLocked ? 'alert-warning' : 'alert-danger'} mb-3`} role="alert" aria-live="assertive">
                 {alertMsg}
               </div>
             )}

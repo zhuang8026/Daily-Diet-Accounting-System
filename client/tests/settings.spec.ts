@@ -53,9 +53,8 @@ test.describe('TC-004 個人目標設定', () => {
     await page.click('#save-settings-btn');
 
     // 確認 Toast 成功
-    const toast = page.locator('[data-testid="toast-success"]');
+    const toast = page.locator('[data-testid="toast-success"]').filter({ hasText: '設定已儲存' });
     await expect(toast).toBeVisible({ timeout: 5000 });
-    await expect(toast).toContainText('設定已儲存');
   });
 
 });

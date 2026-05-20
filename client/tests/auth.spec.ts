@@ -107,12 +107,22 @@ test.describe('TC-002 使用者登入', () => {
   });
 
   test('連續錯誤 5 次後帳號被鎖定', async ({ page }) => {
-    await page.goto('/#/login');
+    // 先註冊一個唯一帳號，確保每次測試都有獨立的 lockout 計數
+    const lockEmail = `locktest_${Date.now()}@demo.com`;
+    await page.goto('/#/register');
+    await page.waitForSelector('#register-form', { timeout: 10000 });
+    await page.fill('[data-testid="reg-name"]', 'Lock Test');
+    await page.fill('[data-testid="reg-email"]', lockEmail);
+    await page.fill('[data-testid="reg-password"]', 'LockTest@123');
+    await page.fill('[data-testid="reg-confirm"]', 'LockTest@123');
+    await page.click('[data-testid="reg-submit"]');
+    await page.waitForURL(/\#\/login/, { timeout: 10000 });
+
     await page.waitForSelector('#login-form', { timeout: 15000 });
 
     // 連續送出 5 次錯誤密碼
     for (let i = 0; i < 5; i++) {
-      await page.fill('[data-testid="login-email"]', 'locktest@demo.com');
+      await page.fill('[data-testid="login-email"]', lockEmail);
       await page.fill('[data-testid="login-password"]', 'WrongPwd@123');
       await page.click('[data-testid="login-submit"]');
       await page.waitForTimeout(500);

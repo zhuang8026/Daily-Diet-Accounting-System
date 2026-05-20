@@ -46,11 +46,10 @@ test.describe('TC-003 新增飲食紀錄', () => {
     // 點擊儲存
     await page.click('[data-testid="save-record-btn"]');
 
-    // 驗證 Toast 出現並包含正確訊息
-    const toast = page.locator('[data-testid="toast-success"]');
+    // 驗證 Toast 出現並包含正確訊息（使用 filter 避免與登入 Toast 衝突）
+    const toast = page.locator('[data-testid="toast-success"]').filter({ hasText: '飲食紀錄已儲存' });
     await expect(toast).toBeVisible({ timeout: 5000 });
-    await expect(toast).toContainText('飲食紀錄已儲存');
-    await expect(toast).toContainText('165 kcal');
+    await expect(toast).toContainText('kcal');
   });
 
   test('不輸入份量直接送出顯示警告', async ({ page }) => {

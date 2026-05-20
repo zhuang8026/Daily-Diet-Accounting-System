@@ -76,6 +76,11 @@ def login(body: LoginRequest, response: Response):
             info["locked_until"] = (
                 datetime.now(timezone.utc) + timedelta(minutes=15)
             ).isoformat()
+            store.login_attempts[email_lower] = info
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail={"locked": True, "message": "帳號已鎖定，請於 15 分鐘後再試"},
+            )
         store.login_attempts[email_lower] = info
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="帳號或密碼錯誤")
 

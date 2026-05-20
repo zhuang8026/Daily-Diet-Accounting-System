@@ -5,18 +5,18 @@ export default defineConfig({
   timeout: 30000,
   retries: 1,
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:5173',
     headless: true,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure'
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile', use: { ...devices['iPhone SE'] } }
+    { name: 'mobile', use: { ...devices['Pixel 5'] } }
   ],
   webServer: {
-    command: 'npx serve . -p 3000 -s',
-    url: 'http://localhost:3000',
+    command: 'npx vite --port 5173',
+    url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI
   }
 });

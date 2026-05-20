@@ -205,7 +205,7 @@ export default function AdminFoods() {
           <button className="btn btn-outline-secondary btn-sm" onClick={() => setShowCsvModal(true)}>
             <i className="bi bi-upload me-1"></i>CSV 匯入
           </button>
-          <button className="btn btn-success btn-sm" onClick={openAdd}>
+          <button id="add-food-btn" className="btn btn-success btn-sm" onClick={openAdd}>
             <i className="bi bi-plus-lg me-1"></i>新增食物
           </button>
         </div>
@@ -215,6 +215,7 @@ export default function AdminFoods() {
       <form className="row g-2 mb-3" onSubmit={handleSearch}>
         <div className="col-12 col-md-5">
           <input
+            id="food-search-admin"
             type="text"
             className="form-control form-control-sm"
             placeholder="搜尋食物名稱..."
@@ -239,7 +240,7 @@ export default function AdminFoods() {
 
       {/* 表格 */}
       <div className="table-responsive">
-        <table className="table table-sm table-hover align-middle">
+        <table id="foods-table" className="table table-sm table-hover align-middle">
           <thead className="table-light">
             <tr>
               <th>ID</th>
@@ -253,7 +254,7 @@ export default function AdminFoods() {
               <th></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="foods-tbody">
             {listResult.items.length === 0 ? (
               <tr>
                 <td colSpan={9} className="text-center text-secondary py-4">無資料</td>
@@ -274,12 +275,14 @@ export default function AdminFoods() {
                       <button
                         className="btn btn-outline-primary btn-sm"
                         onClick={() => openEdit(food)}
+                        aria-label={`編輯 ${food.foodName}`}
                       >
                         編輯
                       </button>
                       <button
                         className="btn btn-outline-danger btn-sm"
                         onClick={() => openDelete(food.foodId)}
+                        aria-label={`刪除 ${food.foodName}`}
                       >
                         刪除
                       </button>
@@ -314,7 +317,7 @@ export default function AdminFoods() {
       <div className="text-secondary small mt-1">共 {listResult.total} 筆</div>
 
       {/* 新增/編輯 Modal */}
-      <div className="modal fade" ref={editModalRef} tabIndex="-1" aria-labelledby="foodModalLabel" aria-hidden="true">
+      <div id="food-modal" className="modal fade" ref={editModalRef} tabIndex="-1" aria-labelledby="foodModalLabel" aria-hidden="true">
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
@@ -336,8 +339,9 @@ export default function AdminFoods() {
                 />
               </div>
               <div className="mb-3">
-                <label className="form-label">食物名稱 <span className="text-danger">*</span></label>
+                <label htmlFor="f-name" className="form-label">食物名稱 <span className="text-danger">*</span></label>
                 <input
+                  id="f-name"
                   type="text"
                   className="form-control"
                   name="foodName"
@@ -349,7 +353,7 @@ export default function AdminFoods() {
               <div className="row g-2 mb-3">
                 <div className="col-6">
                   <label className="form-label">類別</label>
-                  <select className="form-select" name="category" value={formData.category} onChange={handleFormChange}>
+                  <select id="f-cat" className="form-select" name="category" value={formData.category} onChange={handleFormChange}>
                     {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
@@ -364,8 +368,8 @@ export default function AdminFoods() {
               </div>
               <div className="row g-2 mb-3">
                 <div className="col-6">
-                  <label className="form-label">熱量 (kcal)</label>
-                  <input type="number" className="form-control" name="caloriesPerServing" value={formData.caloriesPerServing} onChange={handleFormChange} min={0} />
+                  <label htmlFor="f-cal" className="form-label">熱量 (kcal)</label>
+                  <input id="f-cal" type="number" className="form-control" name="caloriesPerServing" value={formData.caloriesPerServing} onChange={handleFormChange} min={0} />
                 </div>
                 <div className="col-6">
                   <label className="form-label">蛋白質 (g)</label>
@@ -396,14 +400,14 @@ export default function AdminFoods() {
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>取消</button>
-              <button type="button" className="btn btn-success" onClick={handleSave}>儲存</button>
+              <button id="save-food-btn" type="button" className="btn btn-success" onClick={handleSave}>儲存</button>
             </div>
           </div>
         </div>
       </div>
 
       {/* 刪除確認 Modal */}
-      <div className="modal fade" ref={deleteModalRef} tabIndex="-1" aria-labelledby="deleteFoodLabel" aria-hidden="true">
+      <div id="delete-food-modal" className="modal fade" ref={deleteModalRef} tabIndex="-1" aria-labelledby="deleteFoodLabel" aria-hidden="true">
         <div className="modal-dialog modal-sm">
           <div className="modal-content">
             <div className="modal-header">
@@ -413,7 +417,7 @@ export default function AdminFoods() {
             <div className="modal-body">確定要刪除此食物嗎？若已被飲食紀錄引用則無法刪除。</div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" onClick={() => setShowDeleteModal(false)}>取消</button>
-              <button type="button" className="btn btn-danger" onClick={handleDelete}>確認刪除</button>
+              <button id="confirm-del-food-btn" type="button" className="btn btn-danger" onClick={handleDelete}>確認刪除</button>
             </div>
           </div>
         </div>

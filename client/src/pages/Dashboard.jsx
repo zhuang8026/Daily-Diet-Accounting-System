@@ -314,7 +314,7 @@ export default function Dashboard() {
       </button>
 
       {/* Record Modal */}
-      <div className="modal fade" ref={recordModalRef} tabIndex="-1" aria-labelledby="record-modal-title" aria-hidden="true">
+      <div id="record-modal" className="modal fade" ref={recordModalRef} tabIndex="-1" aria-labelledby="record-modal-title" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">

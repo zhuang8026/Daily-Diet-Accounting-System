@@ -12,6 +12,7 @@ function ToastItem({ toast, onRemove }) {
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
+      data-testid={`toast-${toast.type}`}
     >
       <div className="d-flex">
         <div className="toast-body d-flex align-items-center gap-2">

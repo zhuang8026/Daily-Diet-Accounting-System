@@ -64,7 +64,7 @@ export default function Register() {
             <h1 className="h4 mt-2 fw-500">建立帳號</h1>
           </div>
 
-          <form onSubmit={handleSubmit} noValidate>
+          <form id="register-form" onSubmit={handleSubmit} noValidate>
             <div className="mb-3">
               <label htmlFor="reg-name" className="form-label">暱稱</label>
               <input type="text" id="reg-name" className={`form-control ${errors.displayName ? 'is-invalid' : ''}`}
@@ -88,7 +88,7 @@ export default function Register() {
                 <button type="button" className="btn btn-outline-secondary" onClick={() => setShowPwd(v => !v)} aria-label="顯示或隱藏密碼">
                   <i className={`bi ${showPwd ? 'bi-eye-slash' : 'bi-eye'}`}></i>
                 </button>
-                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+                {errors.password && <div id="pwd-error" className="invalid-feedback">{errors.password}</div>}
               </div>
               <div className="form-text text-secondary small">需包含大寫、小寫、數字、符號中至少 3 種，且至少 6 字元</div>
               {pwdStrength !== null && (
@@ -105,7 +105,7 @@ export default function Register() {
               {errors.confirm && <div className="invalid-feedback">{errors.confirm}</div>}
             </div>
 
-            {alertMsg && <div className="alert alert-danger mb-3" role="alert" aria-live="assertive">{alertMsg}</div>}
+            {alertMsg && <div id="reg-alert" className="alert alert-danger mb-3" role="alert" aria-live="assertive">{alertMsg}</div>}
 
             <button type="submit" className="btn btn-success w-100" disabled={loading} data-testid="reg-submit">
               {loading && <span className="spinner-border spinner-border-sm me-2" role="status"></span>}

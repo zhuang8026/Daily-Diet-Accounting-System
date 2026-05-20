@@ -10,7 +10,7 @@ const loginAsAdmin = async (page: Page) => {
   await page.fill('[data-testid="login-email"]', 'admin@demo.com');
   await page.fill('[data-testid="login-password"]', 'Admin@123');
   await page.click('[data-testid="login-submit"]');
-  await page.waitForURL(/\#\/admin/, { timeout: 15000 });
+  await page.waitForURL(/\#\/dashboard/, { timeout: 15000 });
 };
 
 test.describe('TC-006 後台食物管理', () => {
@@ -78,7 +78,7 @@ test.describe('TC-006 後台食物管理', () => {
     await page.fill('#food-search-admin', tempName);
     await page.waitForTimeout(500);
 
-    const delBtn = page.locator('#foods-tbody tr').first().locator('button[aria-label*="刪除"]');
+    const delBtn = page.locator('#foods-tbody tr').first().locator('button[aria-label^="刪除"]');
     await delBtn.click();
 
     // 確認對話框

@@ -124,15 +124,15 @@ export default function Report() {
         <h1 className="h5 fw-500 mb-0">趨勢報表</h1>
         <div className="" role="group" aria-label="報表時間範圍">
           {['7', '30'].map(d => (
-            <label key={d} className={`ms-2 btn btn-outline-success ${days === d ? 'active' : ''}`}>
-              <input type="radio" name="range" value={d} checked={days === d} onChange={() => setDays(d)} className="btn-check" data-testid={`range-${d}`} />
+            <label key={d} data-testid={`range-${d}`} className={`ms-2 btn btn-outline-success ${days === d ? 'active' : ''}`}>
+              <input type="radio" name="range" value={d} checked={days === d} onChange={() => setDays(d)} className="btn-check" />
               近 {d} 天
             </label>
           ))}
         </div>
       </div>
 
-      <div className="card p-3 mb-4">
+      <div id="trend-chart" className="card p-3 mb-4">
         <h2 className="h6 text-secondary mb-3">熱量趨勢</h2>
         <div style={{ position: 'relative', height: 280 }}>
           <Line data={trendData} options={trendOptions} />
@@ -145,7 +145,7 @@ export default function Report() {
 
       <div className="row g-3">
         <div className="col-12 col-md-5">
-          <div className="card p-3">
+          <div id="nutrient-chart" className="card p-3">
             <h2 className="h6 text-secondary mb-3">三大營養素比例</h2>
             <div style={{ position: 'relative', height: 240 }}>
               <Doughnut data={nutrientData} options={nutrientOptions} plugins={[centerTotalPlugin]} />
@@ -153,7 +153,7 @@ export default function Report() {
           </div>
         </div>
         <div className="col-12 col-md-7">
-          <div className="card p-3 h-100">
+          <div id="summary-stats" className="card p-3 h-100">
             <h2 className="h6 text-secondary mb-3">摘要統計</h2>
             <table className="table table-sm">
               <caption className="visually-hidden">摘要統計</caption>

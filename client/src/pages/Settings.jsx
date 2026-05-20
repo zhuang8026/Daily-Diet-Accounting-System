@@ -113,7 +113,7 @@ export default function Settings() {
   return (
     <div className="container py-4" style={{ maxWidth: 680 }}>
       <h1 className="h5 fw-500 mb-4">個人目標設定</h1>
-      <form onSubmit={handleSubmit} noValidate>
+      <form id="settings-form" onSubmit={handleSubmit} noValidate>
         <div className="card p-4 mb-4">
           <h2 className="h6 mb-3 text-secondary">生理資料</h2>
           <div className="mb-3">
@@ -144,8 +144,8 @@ export default function Settings() {
             ))}
           </div>
           <div className="mt-3">
-            <label htmlFor="activityLevel" className="form-label">活動量 <span className="text-danger">*</span></label>
-            <select id="activityLevel" className="form-select" value={form.activityLevel} onChange={set('activityLevel')}>
+            <label htmlFor="activity-select" className="form-label">活動量 <span className="text-danger">*</span></label>
+            <select id="activity-select" className="form-select" value={form.activityLevel} onChange={set('activityLevel')}>
               {ACTIVITY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
           </div>
@@ -169,7 +169,7 @@ export default function Settings() {
           <div className="alert alert-light border d-flex align-items-center justify-content-between mb-3">
             <div>
               <div className="small text-secondary">Harris-Benedict 建議熱量</div>
-              <div className="fs-5 fw-bold text-success">{suggestedCal ? `${suggestedCal} kcal` : '—'}</div>
+              <div id="suggested-cal" className="fs-5 fw-bold text-success">{suggestedCal ? `${suggestedCal} kcal` : '—'}</div>
             </div>
             <button type="button" className="btn btn-outline-success btn-sm" onClick={applySuggested} data-testid="apply-suggested">套用建議值</button>
           </div>
@@ -206,7 +206,7 @@ export default function Settings() {
           <div className="text-secondary small">Email：{profile.email || session.email}</div>
         </div>
 
-        <button type="submit" className="btn btn-success px-5" disabled={loading}>
+        <button id="save-settings-btn" type="submit" className="btn btn-success px-5" disabled={loading}>
           {loading && <span className="spinner-border spinner-border-sm me-2" role="status"></span>}
           儲存設定
         </button>
